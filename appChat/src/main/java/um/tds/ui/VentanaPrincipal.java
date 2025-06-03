@@ -2,26 +2,31 @@ package um.tds.ui;
 
 import java.awt.*;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
 import um.tds.clases.Usuario;
-import java.util.List;
 
 public class VentanaPrincipal extends JPanel {
 
     private JComboBox<String> filtroCombo;
-    private JButton btnShare;
-    private JButton btnSearch;
+    private JButton botonCompartir;
+    private JButton botonBusqueda;
     private JList<Usuario> listaContactos;
     private DefaultListModel<Usuario> modelContactos;
+    private JPanel panelChatContainer;
+
+    private Map<Usuario, VentanaChat> chats = new HashMap<>();
 
     public VentanaPrincipal(List<Usuario> contactos) {
         setLayout(new BorderLayout());
         setBackground(new Color(34, 34, 34));
         setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // --- Panel superior con filtro + botones ---
         JPanel topBar = new JPanel();
         topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
         topBar.setOpaque(false);
@@ -30,21 +35,20 @@ public class VentanaPrincipal extends JPanel {
         filtroCombo.setMaximumSize(new Dimension(200, 30));
         styleCombo(filtroCombo);
 
-        btnShare = new JButton("➤");
-        styleIconButton(btnShare);
+        botonCompartir = new JButton("➤");
+        styleIconButton(botonCompartir);
 
-        btnSearch = new JButton("🔍");
-        styleIconButton(btnSearch);
+        botonBusqueda = new JButton("🔍");
+        styleIconButton(botonBusqueda);
 
         topBar.add(filtroCombo);
         topBar.add(Box.createHorizontalStrut(5));
-        topBar.add(btnShare);
+        topBar.add(botonCompartir);
         topBar.add(Box.createHorizontalStrut(5));
-        topBar.add(btnSearch);
+        topBar.add(botonBusqueda);
 
         add(topBar, BorderLayout.NORTH);
 
-        // --- Lista de contactos ---
         modelContactos = new DefaultListModel<>();
         for (Usuario u : contactos) modelContactos.addElement(u);
 
@@ -57,10 +61,36 @@ public class VentanaPrincipal extends JPanel {
         listaContactos.setSelectionBackground(new Color(64, 64, 64));
 
         JScrollPane scroll = new JScrollPane(listaContactos);
-        scroll.setBorder(BorderFactory.createLineBorder(new Color(80,80,80)));
-        scroll.getViewport().setBackground(new Color(34,34,34));
+        scroll.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80)));
+        scroll.getViewport().setBackground(new Color(34, 34, 34));
 
-        add(scroll, BorderLayout.CENTER);
+        add(scroll, BorderLayout.WEST);
+
+        panelChatContainer = new JPanel(new BorderLayout());
+        panelChatContainer.setBackground(Color.WHITE);
+        panelChatContainer.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80)));
+
+        add(panelChatContainer, BorderLayout.CENTER);
+
+        listaContactos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                if (!listaContactos.isSelectionEmpty() && e.getClickCount() == 1) {
+                    Usuario seleccionado = listaContactos.getSelectedValue();
+                    if (seleccionado != null) {
+                        VentanaChat chat = chats.get(seleccionado);
+                        if (chat == null) {
+                            chat = new VentanaChat();
+                            chats.put(seleccionado, chat);
+                        }
+
+                        panelChatContainer.removeAll();
+                        panelChatContainer.add(chat.getContentPane(), BorderLayout.CENTER);
+                        panelChatContainer.revalidate();
+                        panelChatContainer.repaint();
+                    }
+                }
+            }
+        });
     }
 
     private void styleCombo(JComboBox<?> combo) {
@@ -80,24 +110,17 @@ public class VentanaPrincipal extends JPanel {
         btn.setOpaque(true);
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent e) {
-                btn.setBackground(new Color(100,100,100));
+                btn.setBackground(new Color(100, 100, 100));
             }
+
             public void mouseExited(java.awt.event.MouseEvent e) {
-                btn.setBackground(new Color(80,80,80));
+                btn.setBackground(new Color(80, 80, 80));
             }
         });
     }
 
-    /** Si quieres añadir botón '+' dentro de cada celda,
-     *  
-     *  modifica PerfilUsuario para que lo incluya en su renderer,
-     *  o bien usa un JPanel como cellComponent que contenga PerfilUsuario + JButton.
-     */
-
-    // Ejemplo de inicialización:
     public static void main(String[] args) {
-        // Simulamos unos usuarios de prueba
-    	Usuario u1 = new Usuario("Juan", "Pérez", 612216123, "1234", "Juan@gmail.com", LocalDate.of(1990, 1, 1));
+        Usuario u1 = new Usuario("Juan", "Pérez", 612216123, "1234", "Juan@gmail.com", LocalDate.of(1990, 1, 1));
         Usuario u2 = new Usuario("Ana", "García", 213415135, "1234", "Ana@gmail.com", LocalDate.of(1995, 2, 2));
         Usuario u3 = new Usuario("Carlos", "López", 213143255, "1234", "Carlos@gmail.com", LocalDate.of(1992, 3, 3));
         java.util.List<Usuario> lista = java.util.Arrays.asList(u1, u2, u3);
@@ -105,11 +128,10 @@ public class VentanaPrincipal extends JPanel {
         SwingUtilities.invokeLater(() -> {
             JFrame f = new JFrame("Mensajes");
             f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            f.setSize(300, 500);
+            f.setSize(1000, 600);
             f.setLocationRelativeTo(null);
             f.add(new VentanaPrincipal(lista));
             f.setVisible(true);
         });
     }
 }
-

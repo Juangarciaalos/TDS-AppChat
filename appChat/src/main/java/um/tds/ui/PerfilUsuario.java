@@ -33,11 +33,11 @@ public class PerfilUsuario extends JPanel implements ListCellRenderer<Usuario> {
 		panelCentro.add(nameLabel);
 		panelCentro.add(estadoLabel);
 		panelCentro.setBackground(null);
-		JPanel panelOeste = new JPanel();
-		panelOeste.add(imageLabel);
-		panelOeste.add(Box.createHorizontalStrut(5));
-		panelOeste.setBackground(null);
-		add(panelOeste, BorderLayout.WEST);
+		JPanel panelIzquierda = new JPanel();
+		panelIzquierda.add(imageLabel);
+		panelIzquierda.add(Box.createHorizontalStrut(5));
+		panelIzquierda.setBackground(null);
+		add(panelIzquierda, BorderLayout.WEST);
 		add(panelCentro, BorderLayout.CENTER);
 		add(Box.createHorizontalStrut(5), BorderLayout.EAST);
 	}
@@ -47,7 +47,7 @@ public class PerfilUsuario extends JPanel implements ListCellRenderer<Usuario> {
 			boolean isSelected, boolean cellHasFocus) {
 		nameLabel.setText(user.getNombre() + " " + user.getApellido());
 		estadoLabel.setText(user.getEstado());
-		imageLabel.setIcon(user.getFoto());
+		imageLabel.setIcon(user.getImagenInternet(user.getFoto()));
 		if (isSelected)
 			setBackground(Color.lightGray);
 		else

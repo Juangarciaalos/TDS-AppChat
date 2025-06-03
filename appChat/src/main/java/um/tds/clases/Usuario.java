@@ -25,8 +25,11 @@ public class Usuario {
 	private String correo;
 	private boolean isPremium;
 	private List<Contacto> contactos;
+	private List<Mensaje> mensajesEnviados;
+	private List<Mensaje> mensajesRecibidos;
+	
 	private final LocalDate fechaNacimiento;
-	private ImageIcon foto;
+	private String foto;
 	
 	public Usuario(String nombre, String apellido, int numeroTelefono, String estado, String contraseña, String correo, LocalDate fechaNacimiento) {
 		super();
@@ -38,14 +41,10 @@ public class Usuario {
 		this.correo = correo;
 		this.isPremium = false;
 		this.contactos = new ArrayList<>();
+		this.mensajesEnviados = new ArrayList<>();
+		this.mensajesRecibidos = new ArrayList<>();
 		this.fechaNacimiento = fechaNacimiento;
-		try {
-			URL urlPerfil = new URL("https://api.dicebear.com/9.x/pixel-art/png?seed=" + nombre);
-			Image image = ImageIO.read(urlPerfil);
-			this.foto = new ImageIcon(image.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.foto = "https://api.dicebear.com/9.x/pixel-art/png?seed=" + nombre;
 	}
 	
 	public Usuario(String nombre, String apellido, int numeroTelefono, String contraseña,String correo,LocalDate fechaNacimiento) {		
@@ -116,17 +115,43 @@ public class Usuario {
 		this.contactos.add(contacto);
 	}
 
-	public ImageIcon getFoto() {
+	public String getFoto() {
 		return foto;
 	}
 
-	public void setFoto(ImageIcon foto) {
+	public void String(String foto) {
 		this.foto = foto;
+	}
+	
+	public ImageIcon getImagenInternet(String foto) {
+		ImageIcon imageIcon = null;
+		try {
+			URL urlPerfil = new URL(foto);
+			Image image = ImageIO.read(urlPerfil);
+			imageIcon = new ImageIcon(image.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return imageIcon;
 	}
 
 	public LocalDate getFechaNacimiento() {
 		return fechaNacimiento;
 	}
 	
+	public List<Mensaje> getMensajes(int telefono) {
+		List<Mensaje> mensajes = new ArrayList<>();
+		for (Mensaje mensaje : mensajesEnviados) {
+			if (mensaje.getReceptor().getNumeroTelefono() == telefono) {
+				mensajes.add(mensaje);
+			}
+		}
+		for (Mensaje mensaje : mensajesRecibidos) {
+			if (mensaje.getEmisor().getNumeroTelefono() == telefono) {
+				mensajes.add(mensaje);
+			}
+		}
+		return mensajes;
+	}
 	
 }

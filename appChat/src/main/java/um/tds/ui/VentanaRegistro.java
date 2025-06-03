@@ -17,8 +17,8 @@ public class VentanaRegistro extends JFrame {
     private JDateChooser dateChooser;
     private JTextArea saludoArea;
     private JScrollPane scrollSaludo;
-    private JButton btnCancelar;
-    private JButton btnAceptar;
+    private JButton botonCancelar;
+    private JButton botonAceptar;
 
     public VentanaRegistro() {
         setTitle("AppChat - Perfil");
@@ -31,7 +31,6 @@ public class VentanaRegistro extends JFrame {
         content.setBorder(new EmptyBorder(20, 20, 20, 20));
         setContentPane(content);
 
-        // Campos de texto
         nombreField      = new JTextField();
         apellidosField   = new JTextField();
         telefonoField    = new JTextField();
@@ -44,16 +43,13 @@ public class VentanaRegistro extends JFrame {
         scrollSaludo = new JScrollPane(saludoArea);
         scrollSaludo.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80)));
 
-        // Selector de fecha con JDateChooser
         dateChooser = new JDateChooser(new Date());
         dateChooser.setDateFormatString("dd/MM/yyyy");
         dateChooser.setPreferredSize(new Dimension(120, 25));
 
-        // Botones
-        btnCancelar = new JButton("Cancelar");
-        btnAceptar  = new JButton("Aceptar");
+        botonCancelar = new JButton("Cancelar");
+        botonAceptar  = new JButton("Aceptar");
 
-        // Estilos
         applyFieldStyle(nombreField);
         applyFieldStyle(apellidosField);
         applyFieldStyle(telefonoField);
@@ -61,40 +57,37 @@ public class VentanaRegistro extends JFrame {
         applyFieldStyle(repetirContraseñaField);
         applyTextAreaStyle(saludoArea, scrollSaludo);
         applyDateChooserStyle(dateChooser);
-        applyButtonStyle(btnCancelar);
-        applyButtonStyle(btnAceptar);
+        applyButtonStyle(botonCancelar);
+        applyButtonStyle(botonAceptar);
 
-        btnCancelar.addActionListener(e -> clearAll());
-        btnAceptar.addActionListener(e -> submit());
+        botonCancelar.addActionListener(e -> clearAll());
+        botonAceptar.addActionListener(e -> submit());
 
-        // Labels
-        JLabel lblNombre    = createLabel("Nombre:");
-        JLabel lblApellidos = createLabel("Apellidos:");
-        JLabel lblTelefono  = createLabel("Teléfono:");
-        JLabel lblContra    = createLabel("Contraseña:");
-        JLabel lblReContra  = createLabel("Repetir Contraseña:");
-        JLabel lblFecha     = createLabel("Fecha:");
-        JLabel lblSaludo    = createLabel("Saludo:");
+        JLabel labelNombre    = createLabel("Nombre:");
+        JLabel labelApellidos = createLabel("Apellidos:");
+        JLabel labelTelefono  = createLabel("Teléfono:");
+        JLabel labelContraseña    = createLabel("Contraseña:");
+        JLabel labelReContraseña  = createLabel("Repetir Contraseña:");
+        JLabel labelFecha     = createLabel("Fecha:");
+        JLabel labelSaludo    = createLabel("Saludo:");
 
-        // Layout
         GroupLayout gl = new GroupLayout(content);
         content.setLayout(gl);
         gl.setAutoCreateGaps(true);
         gl.setAutoCreateContainerGaps(true);
 
-        // Horizontal
         gl.setHorizontalGroup(
             gl.createParallelGroup(GroupLayout.Alignment.CENTER)
               .addGroup(
                   gl.createSequentialGroup()
                     .addGroup(gl.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addComponent(lblNombre)
-                        .addComponent(lblApellidos)
-                        .addComponent(lblTelefono)
-                        .addComponent(lblContra)
-                        .addComponent(lblReContra)
-                        .addComponent(lblFecha)
-                        .addComponent(lblSaludo)
+                        .addComponent(labelNombre)
+                        .addComponent(labelApellidos)
+                        .addComponent(labelTelefono)
+                        .addComponent(labelContraseña)
+                        .addComponent(labelReContraseña)
+                        .addComponent(labelFecha)
+                        .addComponent(labelSaludo)
                     )
                     .addGroup(gl.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addComponent(nombreField)
@@ -107,46 +100,45 @@ public class VentanaRegistro extends JFrame {
                     )
               )
               .addGroup(gl.createSequentialGroup()
-                  .addComponent(btnCancelar)
-                  .addComponent(btnAceptar)
+                  .addComponent(botonCancelar)
+                  .addComponent(botonAceptar)
               )
         );
 
-        // Vertical
         gl.setVerticalGroup(
             gl.createSequentialGroup()
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblNombre)
+                    .addComponent(labelNombre)
                     .addComponent(nombreField)
                 )
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblApellidos)
+                    .addComponent(labelApellidos)
                     .addComponent(apellidosField)
                 )
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblTelefono)
+                    .addComponent(labelTelefono)
                     .addComponent(telefonoField)
                 )
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblContra)
+                    .addComponent(labelContraseña)
                     .addComponent(contraseñaField)
                 )
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblReContra)
+                    .addComponent(labelReContraseña)
                     .addComponent(repetirContraseñaField)
                 )
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblFecha)
+                    .addComponent(labelFecha)
                     .addComponent(dateChooser)
                 )
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(lblSaludo)
+                    .addComponent(labelSaludo)
                     .addComponent(scrollSaludo)
                 )
                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 20, Short.MAX_VALUE)
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCancelar)
-                    .addComponent(btnAceptar)
+                    .addComponent(botonCancelar)
+                    .addComponent(botonAceptar)
                 )
         );
     }
@@ -231,7 +223,6 @@ public class VentanaRegistro extends JFrame {
     }
 
     public static void main(String[] args) {
-        // Arranca en el hilo de Swing
         SwingUtilities.invokeLater(() -> {
             VentanaRegistro frame = new VentanaRegistro();
             frame.setVisible(true);
