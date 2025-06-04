@@ -2,9 +2,9 @@ package um.tds.clases;
 
 import java.time.LocalDateTime;
 
-public class Mensaje {
+public class Mensaje  implements Comparable<Mensaje> {
 	private String texto;
-	private LocalDateTime hora;
+	private LocalDateTime horaEnvio;
 	private int emoticono;
 	private int tipo;
 	private Usuario emisor;
@@ -12,7 +12,7 @@ public class Mensaje {
 	
 	public Mensaje(String texto, Usuario emisor, Usuario receptor) {
 		this.texto = texto;
-		this.hora = LocalDateTime.now();
+		this.horaEnvio = LocalDateTime.now();
 		this.receptor = receptor;
 		this.emisor = emisor;
 		this.emoticono = 0; 
@@ -20,7 +20,7 @@ public class Mensaje {
 	
 	public Mensaje(int emoticono, Usuario emisor, Usuario receptor) {
 		this.texto = "";
-		this.hora = LocalDateTime.now();
+		this.horaEnvio = LocalDateTime.now();
 		this.receptor = receptor;
 		this.emisor = emisor;
 		this.emoticono = emoticono;
@@ -34,12 +34,12 @@ public class Mensaje {
 		this.texto = texto;
 	}
 
-	public LocalDateTime getHora() {
-		return hora;
+	public LocalDateTime getHoraEnvio() {
+		return horaEnvio;
 	}
 
-	public void setHora(LocalDateTime hora) {
-		this.hora = hora;
+	public void setHoraEnvio(LocalDateTime hora) {
+		this.horaEnvio = hora;
 	}
 
 	public int getEmoticono() {
@@ -74,5 +74,8 @@ public class Mensaje {
 		this.receptor = receptor;
 	}
 	
-	
+	@Override
+	public int compareTo(Mensaje otro) {
+		return horaEnvio.compareTo(otro.horaEnvio);
+	}
 }

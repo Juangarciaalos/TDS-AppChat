@@ -1,8 +1,68 @@
 package um.tds.clases;
 
+import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
+import um.tds.clases.ConversorImagenes;
+
 public class Grupo extends Contacto{
-	private Usuario admin;
-	private Set<ContactoIndividual> participantes;
+	private List<ContactoIndividual> participantes;
+	private String foto;
+	private String estado;
+	
+	public Grupo(String nombre, List<ContactoIndividual> participantes, String foto, String estado) {
+		super(nombre);
+		this.participantes = participantes;
+		this.foto = foto;
+		this.estado = estado;
+	}
+	
+	public String getStringFoto() {
+		return foto;
+	}
+	
+	public void setStringFoto(String foto) {
+		this.foto = foto;
+	}
+	
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+	
+	public List<ContactoIndividual> getParticipantes() {
+		return Collections.unmodifiableList(participantes);
+	}
+	
+	public void addParticipante(ContactoIndividual participante) {
+		if (participante != null && !participantes.contains(participante)) {
+			participantes.add(participante);
+		}
+	}
+	
+	public void eliminarParticipante(ContactoIndividual participante) {
+		if (participante != null) {
+			participantes.remove(participante);
+		}
+	}
+	
+	
+	@Override
+	public Image getFoto() {		
+		return ConversorImagenes.base64ToImage(ConversorImagenes.imageToBase64(new File("src/main/resources/grupo.png")));	
+	}
+	
+	@Override
+	public String getEstado() {
+		return estado;
+	}
+	
 }

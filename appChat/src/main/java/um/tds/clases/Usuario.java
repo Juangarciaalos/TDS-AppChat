@@ -27,7 +27,7 @@ public class Usuario {
 	private List<Contacto> contactos;
 	private List<Mensaje> mensajesEnviados;
 	private List<Mensaje> mensajesRecibidos;
-	
+	private final LocalDate fechaAlta;
 	private final LocalDate fechaNacimiento;
 	private String foto;
 	
@@ -43,6 +43,7 @@ public class Usuario {
 		this.contactos = new ArrayList<>();
 		this.mensajesEnviados = new ArrayList<>();
 		this.mensajesRecibidos = new ArrayList<>();
+		this.fechaAlta = LocalDate.now();
 		this.fechaNacimiento = fechaNacimiento;
 		this.foto = "https://api.dicebear.com/9.x/pixel-art/png?seed=" + nombre;
 	}
@@ -115,6 +116,18 @@ public class Usuario {
 		this.contactos.add(contacto);
 	}
 
+	public List<Mensaje> getMensajesEnviados() {
+		return Collections.unmodifiableList(mensajesEnviados);
+	}
+	
+	public List<Mensaje> getMensajesRecibidos() {
+		return Collections.unmodifiableList(mensajesRecibidos);
+	}
+	
+	public LocalDate getFechaAlta() {
+		return fechaAlta;
+	}
+	
 	public String getFoto() {
 		return foto;
 	}
@@ -139,18 +152,30 @@ public class Usuario {
 		return fechaNacimiento;
 	}
 	
-	public List<Mensaje> getMensajes(int telefono) {
+	public List<Mensaje> getMensajesEnviadosTlf(int telefono) {
 		List<Mensaje> mensajes = new ArrayList<>();
 		for (Mensaje mensaje : mensajesEnviados) {
-			if (mensaje.getReceptor().getNumeroTelefono() == telefono) {
-				mensajes.add(mensaje);
-			}
-		}
-		for (Mensaje mensaje : mensajesRecibidos) {
 			if (mensaje.getEmisor().getNumeroTelefono() == telefono) {
 				mensajes.add(mensaje);
 			}
 		}
+		return mensajes;
+	}
+	
+	public List<Mensaje> getMensajesRecibidosTlf(int telefono) {
+		List<Mensaje> mensajes = new ArrayList<>();
+		for (Mensaje mensaje : mensajesRecibidos) {
+			if (mensaje.getReceptor().getNumeroTelefono() == telefono) {
+				mensajes.add(mensaje);
+			}
+		}
+		return mensajes;
+	}
+	
+	public List<Mensaje> getAllMensajes(int telefono) {
+		List<Mensaje> mensajes = new ArrayList<>();
+		mensajes.addAll(getMensajesEnviadosTlf(telefono));
+		mensajes.addAll(getMensajesRecibidosTlf(telefono));
 		return mensajes;
 	}
 	
