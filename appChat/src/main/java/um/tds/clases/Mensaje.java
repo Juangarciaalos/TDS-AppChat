@@ -3,6 +3,7 @@ package um.tds.clases;
 import java.time.LocalDateTime;
 
 public class Mensaje  implements Comparable<Mensaje> {
+	private int codigo;
 	private String texto;
 	private LocalDateTime horaEnvio;
 	private int emoticono;
@@ -11,6 +12,7 @@ public class Mensaje  implements Comparable<Mensaje> {
 	private Usuario receptor;
 	
 	public Mensaje(String texto, Usuario emisor, Usuario receptor) {
+		this.codigo = 0; 
 		this.texto = texto;
 		this.horaEnvio = LocalDateTime.now();
 		this.receptor = receptor;
@@ -19,6 +21,7 @@ public class Mensaje  implements Comparable<Mensaje> {
 	}
 	
 	public Mensaje(int emoticono, Usuario emisor, Usuario receptor) {
+		this.codigo = 0; 
 		this.texto = "";
 		this.horaEnvio = LocalDateTime.now();
 		this.receptor = receptor;
@@ -26,6 +29,14 @@ public class Mensaje  implements Comparable<Mensaje> {
 		this.emoticono = emoticono;
 	}
 
+	public int getCodigo() {
+		return codigo;
+	}
+	
+	public void setCodigo(int codigo) {
+		this.codigo = codigo;
+	}
+	
 	public String getTexto() {
 		return texto;
 	}
