@@ -2,17 +2,11 @@ package um.tds.clases;
 
 import java.awt.Image;
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-
-import um.tds.clases.ConversorImagenes;
 
 public class Grupo extends Contacto{
 	private List<ContactoIndividual> participantes;
@@ -54,6 +48,12 @@ public class Grupo extends Contacto{
 		}
 	}
 	
+	public Usuario getUsuarioTlf(int telefono) {
+		Optional<ContactoIndividual> contacto = participantes.stream()
+				.filter(c -> c.getNumeroTelefono() == telefono)
+				.findFirst();
+		return contacto.isPresent() ? contacto.get().getUsuario() : null;
+	}
 	
 	@Override
 	public Image getFoto() {		

@@ -1,9 +1,7 @@
 package um.tds.clases;
 
 import java.awt.Image;
-import java.util.List;
 
-import javax.swing.ImageIcon;
 
 public class ContactoIndividual extends Contacto{
 	private Usuario usuario;
@@ -15,7 +13,7 @@ public class ContactoIndividual extends Contacto{
 	
 	@Override
 	public Image getFoto() {
-		return usuario.getImagenInternet(usuario.getFoto()).getImage();
+		return usuario.getImagenInternet(usuario.getStringFoto()).getImage();
 	}
 	
 	@Override
@@ -35,7 +33,5 @@ public class ContactoIndividual extends Contacto{
 		return usuario.getNumeroTelefono();
 	}
 	
-	public List<Mensaje> getListaMensaje() {
-		return usuario.getAllMensajes(usuario.getNumeroTelefono()).stream().sorted().toList();
-	}
+	
 }

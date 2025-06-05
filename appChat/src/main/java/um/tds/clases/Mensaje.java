@@ -7,11 +7,10 @@ public class Mensaje  implements Comparable<Mensaje> {
 	private String texto;
 	private LocalDateTime horaEnvio;
 	private int emoticono;
-	private int tipo;
 	private Usuario emisor;
-	private Usuario receptor;
+	private Contacto receptor;
 	
-	public Mensaje(String texto, Usuario emisor, Usuario receptor) {
+	public Mensaje(String texto, Usuario emisor, Contacto receptor) {
 		this.codigo = 0; 
 		this.texto = texto;
 		this.horaEnvio = LocalDateTime.now();
@@ -20,7 +19,7 @@ public class Mensaje  implements Comparable<Mensaje> {
 		this.emoticono = 0; 
 	}
 	
-	public Mensaje(int emoticono, Usuario emisor, Usuario receptor) {
+	public Mensaje(int emoticono, Usuario emisor, Contacto receptor) {
 		this.codigo = 0; 
 		this.texto = "";
 		this.horaEnvio = LocalDateTime.now();
@@ -59,15 +58,7 @@ public class Mensaje  implements Comparable<Mensaje> {
 
 	public void setEmoticono(int emoticono) {
 		this.emoticono = emoticono;
-	}
-
-	public int getTipo() {
-		return tipo;
-	}
-
-	public void setTipo(int tipo) {
-		this.tipo = tipo;
-	}
+	}	
 
 	public Usuario getEmisor() {
 		return emisor;
@@ -77,11 +68,11 @@ public class Mensaje  implements Comparable<Mensaje> {
 		this.emisor = emisor;
 	}
 
-	public Usuario getReceptor() {
+	public Contacto getReceptor() {
 		return receptor;
 	}
 
-	public void setReceptor(Usuario receptor) {
+	public void setReceptor(Contacto receptor) {
 		this.receptor = receptor;
 	}
 	

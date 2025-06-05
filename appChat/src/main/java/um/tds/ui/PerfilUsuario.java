@@ -47,7 +47,7 @@ public class PerfilUsuario extends JPanel implements ListCellRenderer<Usuario> {
 			boolean isSelected, boolean cellHasFocus) {
 		nameLabel.setText(user.getNombre() + " " + user.getApellido());
 		estadoLabel.setText(user.getEstado());
-		imageLabel.setIcon(user.getImagenInternet(user.getFoto()));
+		imageLabel.setIcon(user.getImagenInternet(user.getStringFoto()));
 		if (isSelected)
 			setBackground(Color.lightGray);
 		else

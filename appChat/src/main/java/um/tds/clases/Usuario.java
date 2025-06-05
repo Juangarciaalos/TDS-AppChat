@@ -1,7 +1,6 @@
 package um.tds.clases;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.awt.Image;
@@ -32,7 +31,7 @@ public class Usuario {
 	private final LocalDate fechaNacimiento;
 	private String foto;
 	
-	public Usuario(String nombre, String apellido, int numeroTelefono, String estado, String contraseña, String correo, LocalDate fechaNacimiento) {
+	public Usuario(String nombre, String apellido, int numeroTelefono, String estado, String contraseña, String correo, LocalDate fechaNacimiento, LocalDate fechaAlta) {
 		super();
 		this.codigo = 0; 
 		this.nombre = nombre;
@@ -45,13 +44,13 @@ public class Usuario {
 		this.contactos = new ArrayList<>();
 		this.mensajesEnviados = new ArrayList<>();
 		this.mensajesRecibidos = new ArrayList<>();
-		this.fechaAlta = LocalDate.now();
+		this.fechaAlta = fechaAlta;
 		this.fechaNacimiento = fechaNacimiento;
 		this.foto = "https://api.dicebear.com/9.x/pixel-art/png?seed=" + nombre;
 	}
 	
 	public Usuario(String nombre, String apellido, int numeroTelefono, String contraseña,String correo,LocalDate fechaNacimiento) {		
-		this(nombre, apellido, numeroTelefono, ESTADO_BASE, contraseña, correo, fechaNacimiento);		
+		this(nombre, apellido, numeroTelefono, ESTADO_BASE, contraseña, correo, fechaNacimiento, LocalDate.now());		
 	}
 	
 	public int getCodigo() {
@@ -121,6 +120,11 @@ public class Usuario {
 	public List<Contacto> getContactos() {
 		return Collections.unmodifiableList(contactos);
 	}
+	
+	public void setContactos(List<Contacto> contactos) {
+		if (contactos != null) 
+			this.contactos = new ArrayList<>(contactos);
+	}
 
 	public void addContacto(Contacto contacto) {
 		this.contactos.add(contacto);
@@ -138,11 +142,11 @@ public class Usuario {
 		return fechaAlta;
 	}
 	
-	public String getFoto() {
+	public String getStringFoto() {
 		return foto;
 	}
 
-	public void String(String foto) {
+	public void setStringFoto(String foto) {
 		this.foto = foto;
 	}
 	
@@ -175,9 +179,19 @@ public class Usuario {
 	public List<Mensaje> getMensajesRecibidosTlf(int telefono) {
 		List<Mensaje> mensajes = new ArrayList<>();
 		for (Mensaje mensaje : mensajesRecibidos) {
-			if (mensaje.getReceptor().getNumeroTelefono() == telefono) {
-				mensajes.add(mensaje);
+			if (mensaje.getReceptor() instanceof ContactoIndividual){
+				ContactoIndividual contacto = (ContactoIndividual) mensaje.getReceptor();
+				if (contacto.getNumeroTelefono() == telefono) {
+					mensajes.add(mensaje);
+				}
+			} else if (mensaje.getReceptor() instanceof Grupo) {
+				Grupo grupo = (Grupo) mensaje.getReceptor();
+				Usuario usuario = grupo.getUsuarioTlf(telefono);
+				if (usuario != null) {
+					mensajes.add(mensaje);
+				}
 			}
+			
 		}
 		return mensajes;
 	}
