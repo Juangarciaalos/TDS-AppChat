@@ -36,6 +36,10 @@ public class Grupo extends Contacto{
 		return Collections.unmodifiableList(participantes);
 	}
 	
+	public void setParticipantes(List<ContactoIndividual> participantes) {
+		this.participantes = participantes != null ? List.copyOf(participantes) : Collections.emptyList();
+	}
+	
 	public void addParticipante(ContactoIndividual participante) {
 		if (participante != null && !participantes.contains(participante)) {
 			participantes.add(participante);
