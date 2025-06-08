@@ -32,7 +32,7 @@ public abstract class Contacto {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
-	
+		
 	public List<Mensaje> getListaMensaje() {
 		return Collections.unmodifiableList(listaMensaje);
 	}
