@@ -13,13 +13,22 @@ public class ContactoIndividual extends Contacto{
 	
 	@Override
 	public Image getFoto() {
-		return usuario.getImagenInternet(usuario.getStringFoto()).getImage();
+		return usuario.getFoto();
 	}
 	
 	@Override
 	public String getEstado() {
 		return usuario.getEstado();
 	}
+	
+	public boolean isContactoAgregado() {
+		if (this.getNombre() == String.valueOf(usuario.getNumeroTelefono())) {
+			return false;
+		}
+		return true;
+	}
+	
+	
 	
 	public Usuario getUsuario() {
 		return usuario;
