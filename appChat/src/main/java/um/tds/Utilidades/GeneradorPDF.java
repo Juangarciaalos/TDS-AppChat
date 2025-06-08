@@ -13,8 +13,9 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import um.tds.clases.Mensaje;
 
-public class GeneradorPDF {
+public enum GeneradorPDF {
 	
+	INSTANCE;
 	
 	public void generarPDF(String contacto, List<Mensaje> mensajes, String rutaSalida) throws IOException, DocumentException {
 		Document documento = new Document();
