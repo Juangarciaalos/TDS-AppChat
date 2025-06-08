@@ -249,6 +249,13 @@ public class Usuario {
 		return mensajes;
 	}
 	
+	public List<Mensaje> getAllMensajes() {
+		List<Mensaje> mensajes = new ArrayList<>();
+		mensajes.addAll(mensajesEnviados);
+		mensajes.addAll(mensajesRecibidos);
+		return mensajes;
+	}
+	
 	public boolean esAgregado(Usuario usuario) {
 		for (Contacto contacto : contactos) {
 			if (contacto instanceof ContactoIndividual && ((ContactoIndividual) contacto).getUsuario().equals(usuario)) {
