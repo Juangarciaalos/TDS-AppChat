@@ -1,5 +1,6 @@
 package um.tds.clases;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -25,6 +26,28 @@ public class ConversorImagenes {
 	            return null;
 	        }
 	    }
+		
+		public static String imageToBase64(Image img) {
+		    try {
+		        BufferedImage buffered = new BufferedImage(
+		            img.getWidth(null),
+		            img.getHeight(null),
+		            BufferedImage.TYPE_INT_ARGB
+		        );
+		        Graphics2D g2d = buffered.createGraphics();
+		        g2d.drawImage(img, 0, 0, null);
+		        g2d.dispose();
+		        String formato = "png"; 
+		        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		        ImageIO.write(buffered, formato, outputStream);
+		        byte[] bytes = outputStream.toByteArray();
+
+		        return Base64.getEncoder().encodeToString(bytes);
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		        return null;
+		    }
+		}
 
 	    public static Image base64ToImage(String base64) {
 	        try {

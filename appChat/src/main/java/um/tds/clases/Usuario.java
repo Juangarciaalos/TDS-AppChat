@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+
+
 import java.time.LocalDate;
 
 
@@ -46,7 +49,17 @@ public class Usuario {
 		this.mensajesRecibidos = new ArrayList<>();
 		this.fechaAlta = fechaAlta;
 		this.fechaNacimiento = fechaNacimiento;
-		this.foto = "https://api.dicebear.com/9.x/pixel-art/png?seed=" + nombre;
+		this.foto = getImagenInternetCodificada();
+	}
+	
+	public Usuario(String nombre, String apellido, int numeroTelefono, String estado, String contraseña, String correo, LocalDate fechaNacimiento, LocalDate fechaAlta, String fotoCodificada) {
+		this(nombre, apellido, numeroTelefono, estado, contraseña, correo, fechaNacimiento, fechaAlta);
+		this.foto = fotoCodificada;
+	}
+	
+	public Usuario(String nombre, String apellido, int numeroTelefono, String estado, String contraseña, String correo, LocalDate fechaNacimiento, LocalDate fechaAlta, File foto) {
+		this(nombre, apellido, numeroTelefono, estado, contraseña, correo, fechaNacimiento, fechaAlta);
+		this.foto = ConversorImagenes.imageToBase64(foto);
 	}
 	
 	public Usuario(String nombre, String apellido, int numeroTelefono, String contraseña,String correo,LocalDate fechaNacimiento) {		
@@ -138,6 +151,10 @@ public class Usuario {
 		return Collections.unmodifiableList(mensajesRecibidos);
 	}
 	
+	public void enviarMensaje(Mensaje mensaje, Contacto contacto) {
+		contacto.addMensaje(mensaje);
+	}
+	
 	public LocalDate getFechaAlta() {
 		return fechaAlta;
 	}
@@ -150,16 +167,45 @@ public class Usuario {
 		this.foto = foto;
 	}
 	
-	public ImageIcon getImagenInternet(String foto) {
-		ImageIcon imageIcon = null;
+	public Image getFoto() {
+		return ConversorImagenes.base64ToImage(foto);
+	}
+	
+	private String getImagenInternetCodificada() {
+		String foto = "https://api.dicebear.com/9.x/pixel-art/png?seed=" + nombre;
+		Image image = getImagenInternet(foto);
+		return ConversorImagenes.imageToBase64(image);
+	}
+	
+	public ImageIcon getImagenIcon() {
+		Image image = ConversorImagenes.base64ToImage(getImagenInternetCodificada());
+		return new ImageIcon(image.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+	}
+	
+	
+	public Contacto getContacto(int telefono) {
+		return contactos.stream()
+				.filter(c -> c instanceof ContactoIndividual && ((ContactoIndividual) c).getNumeroTelefono() == telefono)
+				.findFirst()
+				.orElse(null);
+	}
+	
+	public Contacto getContacto(String nombre) {
+		return contactos.stream()
+				.filter(c -> c.getNombre().equals(nombre))
+				.findFirst()
+				.orElse(null);
+	}
+	
+	public Image getImagenInternet(String foto) {
+		Image image= null;
 		try {
 			URL urlPerfil = new URL(foto);
-			Image image = ImageIO.read(urlPerfil);
-			imageIcon = new ImageIcon(image.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+			image = ImageIO.read(urlPerfil);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return imageIcon;
+		return image;
 	}
 
 	public LocalDate getFechaNacimiento() {
@@ -201,6 +247,15 @@ public class Usuario {
 		mensajes.addAll(getMensajesEnviadosTlf(telefono));
 		mensajes.addAll(getMensajesRecibidosTlf(telefono));
 		return mensajes;
+	}
+	
+	public boolean esAgregado(Usuario usuario) {
+		for (Contacto contacto : contactos) {
+			if (contacto instanceof ContactoIndividual && ((ContactoIndividual) contacto).getUsuario().equals(usuario)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 }
