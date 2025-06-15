@@ -17,7 +17,7 @@ import java.time.LocalDate;
 
 
 public class Usuario {
-	private final static String ESTADO_BASE = "Hi everyone!";
+	public final static String ESTADO_BASE = "Hi everyone!";
 	
 	private int codigo;	
 	private String nombre;
@@ -54,6 +54,11 @@ public class Usuario {
 	
 	public Usuario(String nombre, String apellido, int numeroTelefono, String estado, String contraseña, String correo, LocalDate fechaNacimiento, LocalDate fechaAlta, String fotoCodificada) {
 		this(nombre, apellido, numeroTelefono, estado, contraseña, correo, fechaNacimiento, fechaAlta);
+		this.foto = fotoCodificada;
+	}
+	
+	public Usuario(String nombre, String apellido, int numeroTelefono, String contraseña, String correo, LocalDate fechaNacimiento, LocalDate fechaAlta, String fotoCodificada) {
+		this(nombre, apellido, numeroTelefono, ESTADO_BASE, contraseña, correo, fechaNacimiento, fechaAlta);
 		this.foto = fotoCodificada;
 	}
 	

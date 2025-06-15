@@ -3,7 +3,7 @@ package um.tds.persistencia;
 public class TDSFactoriaDAO extends FactoriaDAO {
 
 
-	private TDSFactoriaDAO() {
+	public TDSFactoriaDAO() {
 	}
 
 
