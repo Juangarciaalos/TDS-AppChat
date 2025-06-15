@@ -97,7 +97,6 @@ public class AdaptadorGrupoDAO implements GrupoDAO{
 		
 		Entidad eGrupo = servPersistencia.recuperarEntidad(codigo);
 		Grupo grupoRecuperado = crearGrupoDesdeEntidad(eGrupo);
-		PoolDAO.INSTANCE.addObject(codigo, grupoRecuperado);
 		
 		return grupoRecuperado;
 	}
@@ -135,14 +134,16 @@ public class AdaptadorGrupoDAO implements GrupoDAO{
 		Grupo grupo;
 		
 		String nombre = servPersistencia.recuperarPropiedadEntidad(eGrupo, NOMBRE);
-		List<Mensaje> listaMensajes = stringToMensajes(servPersistencia.recuperarPropiedadEntidad(eGrupo, LISTA_MENSAJES));
-		List<ContactoIndividual> participantes = stringToParticipantes(servPersistencia.recuperarPropiedadEntidad(eGrupo, PARTICIPANTES));
 		String foto = servPersistencia.recuperarPropiedadEntidad(eGrupo, FOTO);
 		String estado = servPersistencia.recuperarPropiedadEntidad(eGrupo, ESTADO);
-		
-		grupo = new Grupo(nombre, participantes, foto, estado);
-		grupo.setListaMensaje(listaMensajes);
+		grupo = new Grupo(nombre, null, foto, estado);
 		grupo.setCodigo(eGrupo.getId());
+		PoolDAO.INSTANCE.addObject(grupo.getCodigo(), grupo);
+
+		List<Mensaje> listaMensajes = stringToMensajes(servPersistencia.recuperarPropiedadEntidad(eGrupo, LISTA_MENSAJES));
+		List<ContactoIndividual> participantes = stringToParticipantes(servPersistencia.recuperarPropiedadEntidad(eGrupo, PARTICIPANTES));
+		grupo.setListaMensaje(listaMensajes);
+		grupo.setParticipantes(participantes);
 		
 		return grupo;
 	}

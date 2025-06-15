@@ -85,7 +85,6 @@ public class AdaptadorContactoIndividualDAO implements ContactoIndividualDAO {
 		
 		Entidad eContacto = servPersistencia.recuperarEntidad(codigo);
 		ContactoIndividual contactoIndividual = crearContactoDesdeEntidad(eContacto);
-		PoolDAO.INSTANCE.addObject(codigo, contactoIndividual);
 		
 		return contactoIndividual;
 	}
@@ -119,11 +118,13 @@ public class AdaptadorContactoIndividualDAO implements ContactoIndividualDAO {
 		ContactoIndividual contactoIndividual;
 		
 		String nombre = servPersistencia.recuperarPropiedadEntidad(eContacto, NOMBRE);
+		contactoIndividual = new ContactoIndividual(nombre, null);
+		contactoIndividual.setCodigo(eContacto.getId());
+		PoolDAO.INSTANCE.addObject(contactoIndividual.getCodigo(), contactoIndividual);
+
 		List<Mensaje> mensajesRecibidos = stringToMensajes(servPersistencia.recuperarPropiedadEntidad(eContacto, LISTA_MENSAJES));
 		Usuario usuario = AdaptadorUsuarioDAO.getInstancia().recuperarUsuario(Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eContacto, USUARIO)));
-		
-		contactoIndividual = new ContactoIndividual(nombre, usuario);
-		contactoIndividual.setCodigo(eContacto.getId());
+		contactoIndividual.setUsuario(usuario);
 		contactoIndividual.setListaMensaje(mensajesRecibidos);
 		
 		return contactoIndividual;

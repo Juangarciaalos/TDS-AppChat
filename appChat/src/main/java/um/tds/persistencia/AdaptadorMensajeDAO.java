@@ -97,7 +97,7 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 		
 		Entidad eMensaje = servPersistencia.recuperarEntidad(codigo);
 		Mensaje mensaje= crearMensajeDesdeEntidad(eMensaje);
-		PoolDAO.INSTANCE.addObject(codigo, mensaje);
+		
 		
 		return mensaje;
 	}
@@ -137,6 +137,13 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 		String texto = servPersistencia.recuperarPropiedadEntidad(eMensaje, TEXTO);
 		LocalDateTime horaEnvio = LocalDateTime.parse(servPersistencia.recuperarPropiedadEntidad(eMensaje, HORA_ENVIO));
 		int emoticono = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, EMOTICONO));
+		if (emoticono == 0) {
+			mensaje = new Mensaje(texto, null, null);
+		} else {
+			mensaje = new Mensaje(emoticono, null, null);
+		}
+		mensaje.setCodigo(eMensaje.getId());
+		PoolDAO.INSTANCE.addObject(mensaje.getCodigo(), mensaje);
 		Usuario emisor = AdaptadorUsuarioDAO.getInstancia().recuperarUsuario(Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, EMISOR)));
 		String tipoReceptor = servPersistencia.recuperarPropiedadEntidad(eMensaje, TIPO_RECEPTOR);
 		Contacto receptor;
@@ -146,13 +153,7 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 			receptor = AdaptadorGrupoDAO.getInstancia().recuperarGrupo(Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, RECEPTOR)));
 		}
 		
-		if (emoticono == 0) {
-			mensaje = new Mensaje(texto, emisor, receptor);
-		} else {
-			mensaje = new Mensaje(emoticono, emisor, receptor);
-		}
 		mensaje.setHoraEnvio(horaEnvio);
-		mensaje.setCodigo(eMensaje.getId());
 		
 		return mensaje;
 		
