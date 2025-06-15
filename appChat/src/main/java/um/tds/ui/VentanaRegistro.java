@@ -2,28 +2,40 @@ package um.tds.ui;
 
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import com.toedter.calendar.JDateChooser;
 
-public class VentanaRegistro extends JFrame {
+import um.tds.clases.ConversorImagenes;
+import um.tds.clases.Usuario;
+import um.tds.controlador.Controlador;
 
+public class VentanaRegistro extends JFrame {
     private JTextField nombreField;
     private JTextField apellidosField;
     private JTextField telefonoField;
+    private JTextField correoField;
     private JPasswordField contraseñaField;
     private JPasswordField repetirContraseñaField;
     private JDateChooser dateChooser;
-    private JTextArea saludoArea;
+    private JTextArea estadoArea;
     private JScrollPane scrollSaludo;
     private JButton botonCancelar;
     private JButton botonAceptar;
+    private JLabel imageLabel;
+    private JButton btnSeleccionarImagen;
+    private JButton togglePasswordBtn;
+    private boolean passwordVisible = false;
 
     public VentanaRegistro() {
-        setTitle("AppChat - Perfil");
+        setTitle("AppChat - Registro de Usuario");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(600, 400);
+        setSize(700, 500);
         setLocationRelativeTo(null);
 
         JPanel content = new JPanel();
@@ -31,16 +43,17 @@ public class VentanaRegistro extends JFrame {
         content.setBorder(new EmptyBorder(20, 20, 20, 20));
         setContentPane(content);
 
-        nombreField      = new JTextField();
-        apellidosField   = new JTextField();
-        telefonoField    = new JTextField();
-        contraseñaField  = new JPasswordField();
+        nombreField = new JTextField();
+        apellidosField = new JTextField();
+        telefonoField = new JTextField();
+        correoField = new JTextField();
+        contraseñaField = new JPasswordField();
         repetirContraseñaField = new JPasswordField();
 
-        saludoArea = new JTextArea(4, 20);
-        saludoArea.setLineWrap(true);
-        saludoArea.setWrapStyleWord(true);
-        scrollSaludo = new JScrollPane(saludoArea);
+        estadoArea = new JTextArea(4, 20);
+        estadoArea.setLineWrap(true);
+        estadoArea.setWrapStyleWord(true);
+        scrollSaludo = new JScrollPane(estadoArea);
         scrollSaludo.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80)));
 
         dateChooser = new JDateChooser(new Date());
@@ -48,14 +61,15 @@ public class VentanaRegistro extends JFrame {
         dateChooser.setPreferredSize(new Dimension(120, 25));
 
         botonCancelar = new JButton("Cancelar");
-        botonAceptar  = new JButton("Aceptar");
+        botonAceptar = new JButton("Aceptar");
 
         applyFieldStyle(nombreField);
         applyFieldStyle(apellidosField);
         applyFieldStyle(telefonoField);
+        applyFieldStyle(correoField);
         applyFieldStyle(contraseñaField);
         applyFieldStyle(repetirContraseñaField);
-        applyTextAreaStyle(saludoArea, scrollSaludo);
+        applyTextAreaStyle(estadoArea, scrollSaludo);
         applyDateChooserStyle(dateChooser);
         applyButtonStyle(botonCancelar);
         applyButtonStyle(botonAceptar);
@@ -63,13 +77,23 @@ public class VentanaRegistro extends JFrame {
         botonCancelar.addActionListener(e -> clearAll());
         botonAceptar.addActionListener(e -> submit());
 
-        JLabel labelNombre    = createLabel("Nombre:");
+        imageLabel = new JLabel(new ImageIcon(new ImageIcon("src/main/resources/default-user.png").getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
+        btnSeleccionarImagen = new JButton("Seleccionar Imagen");
+        btnSeleccionarImagen.addActionListener(e -> seleccionarImagen());
+
+        togglePasswordBtn = new JButton("👁");
+        togglePasswordBtn.setFocusPainted(false);
+        togglePasswordBtn.addActionListener(e -> togglePasswordVisibility());
+
+        JLabel labelNombre = createLabel("Nombre:");
         JLabel labelApellidos = createLabel("Apellidos:");
-        JLabel labelTelefono  = createLabel("Teléfono:");
-        JLabel labelContraseña    = createLabel("Contraseña:");
-        JLabel labelReContraseña  = createLabel("Repetir Contraseña:");
-        JLabel labelFecha     = createLabel("Fecha:");
-        JLabel labelSaludo    = createLabel("Saludo:");
+        JLabel labelTelefono = createLabel("Teléfono:");
+        JLabel labelCorreo = createLabel("Correo:");
+        JLabel labelContraseña = createLabel("Contraseña:");
+        JLabel labelReContraseña = createLabel("Repetir Contraseña:");
+        JLabel labelFecha = createLabel("Fecha:");
+        JLabel labelEstado = createLabel("Estado:");
+        JLabel labelImagen = createLabel("Imagen:");
 
         GroupLayout gl = new GroupLayout(content);
         content.setLayout(gl);
@@ -78,31 +102,38 @@ public class VentanaRegistro extends JFrame {
 
         gl.setHorizontalGroup(
             gl.createParallelGroup(GroupLayout.Alignment.CENTER)
-              .addGroup(
-                  gl.createSequentialGroup()
+                .addGroup(gl.createSequentialGroup()
                     .addGroup(gl.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addComponent(labelNombre)
                         .addComponent(labelApellidos)
                         .addComponent(labelTelefono)
+                        .addComponent(labelCorreo)
                         .addComponent(labelContraseña)
                         .addComponent(labelReContraseña)
                         .addComponent(labelFecha)
-                        .addComponent(labelSaludo)
+                        .addComponent(labelEstado)
+                        .addComponent(labelImagen)
                     )
                     .addGroup(gl.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addComponent(nombreField)
                         .addComponent(apellidosField)
-                        .addComponent(telefonoField, 150, 150, 200)
+                        .addComponent(telefonoField)
+                        .addComponent(correoField)
                         .addComponent(contraseñaField)
                         .addComponent(repetirContraseñaField)
                         .addComponent(dateChooser)
                         .addComponent(scrollSaludo)
+                        .addComponent(imageLabel)
                     )
-              )
-              .addGroup(gl.createSequentialGroup()
-                  .addComponent(botonCancelar)
-                  .addComponent(botonAceptar)
-              )
+                    .addGroup(gl.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(togglePasswordBtn)
+                        .addComponent(btnSeleccionarImagen)
+                    )
+                )
+                .addGroup(gl.createSequentialGroup()
+                    .addComponent(botonCancelar)
+                    .addComponent(botonAceptar)
+                )
         );
 
         gl.setVerticalGroup(
@@ -120,8 +151,13 @@ public class VentanaRegistro extends JFrame {
                     .addComponent(telefonoField)
                 )
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
+					.addComponent(labelCorreo)
+					.addComponent(correoField)
+				)
+                .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(labelContraseña)
                     .addComponent(contraseñaField)
+                    .addComponent(togglePasswordBtn)
                 )
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(labelReContraseña)
@@ -132,10 +168,14 @@ public class VentanaRegistro extends JFrame {
                     .addComponent(dateChooser)
                 )
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.LEADING)
-                    .addComponent(labelSaludo)
+                    .addComponent(labelEstado)
                     .addComponent(scrollSaludo)
                 )
-                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 20, Short.MAX_VALUE)
+                .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelImagen)
+                    .addComponent(imageLabel)
+                    .addComponent(btnSeleccionarImagen)
+                )
                 .addGroup(gl.createParallelGroup(GroupLayout.Alignment.BASELINE)
                     .addComponent(botonCancelar)
                     .addComponent(botonAceptar)
@@ -146,7 +186,7 @@ public class VentanaRegistro extends JFrame {
     private JLabel createLabel(String text) {
         JLabel lbl = new JLabel(text);
         lbl.setForeground(Color.WHITE);
-        lbl.setFont(lbl.getFont().deriveFont(Font.BOLD, 14f));
+        lbl.setFont(new Font("Segoe UI", Font.BOLD, 14));
         return lbl;
     }
 
@@ -155,39 +195,31 @@ public class VentanaRegistro extends JFrame {
         field.setForeground(Color.WHITE);
         field.setCaretColor(Color.WHITE);
         field.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        field.setFont(field.getFont().deriveFont(14f));
+        field.setFont(new Font("Segoe UI", Font.PLAIN, 14));
     }
 
     private void applyTextAreaStyle(JTextArea area, JScrollPane scroll) {
         area.setBackground(new Color(64, 64, 64));
         area.setForeground(Color.WHITE);
         area.setCaretColor(Color.WHITE);
-        area.setFont(area.getFont().deriveFont(14f));
+        area.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         scroll.getViewport().setBackground(new Color(64, 64, 64));
-        scroll.setBorder(BorderFactory.createLineBorder(new Color(80, 80, 80)));
     }
 
     private void applyDateChooserStyle(JDateChooser chooser) {
         chooser.setBackground(new Color(64, 64, 64));
         chooser.setForeground(Color.WHITE);
-        chooser.setFont(chooser.getFont().deriveFont(14f));
-        chooser.getCalendarButton().setFocusPainted(false);
+        chooser.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         chooser.getCalendarButton().setBackground(new Color(80, 80, 80));
-        chooser.getCalendarButton().setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        chooser.getCalendarButton().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     private void applyButtonStyle(JButton btn) {
         btn.setFocusPainted(false);
         btn.setBackground(new Color(80, 80, 80));
         btn.setForeground(Color.WHITE);
-        btn.setFont(btn.getFont().deriveFont(Font.BOLD, 12f));
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btn.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) { btn.setBackground(new Color(100, 100, 100)); }
-            @Override public void mouseExited(MouseEvent e)  { btn.setBackground(new Color(80, 80, 80)); }
-        });
     }
 
     private void clearAll() {
@@ -197,35 +229,74 @@ public class VentanaRegistro extends JFrame {
         contraseñaField.setText("");
         repetirContraseñaField.setText("");
         dateChooser.setDate(new Date());
-        saludoArea.setText("");
+        estadoArea.setText("");
+        imageLabel.setIcon(null);
     }
 
     private void submit() {
-        String pass  = new String(contraseñaField.getPassword());
+        String nombre = nombreField.getText().trim();
+        String apellidos = apellidosField.getText().trim();
+        String telefono = telefonoField.getText().trim();
+        String correo = correoField.getText().trim();
+        String pass1 = new String(contraseñaField.getPassword());
         String pass2 = new String(repetirContraseñaField.getPassword());
-        if (!pass.equals(pass2)) {
-            JOptionPane.showMessageDialog(this,
-                "Las contraseñas no coinciden.",
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
+        String estado = estadoArea.getText().trim();
+
+        if (nombre.isEmpty() || apellidos.isEmpty() || telefono.isEmpty() || correo.isEmpty() ||pass1.isEmpty() || pass2.isEmpty() || dateChooser.getDate() == null) {
+            JOptionPane.showMessageDialog(this, "Todos los campos deben estar completos", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        Date fecha = dateChooser.getDate();
-        JOptionPane.showMessageDialog(this,
-            "Datos guardados:\n" +
-            "Nombre: " + nombreField.getText() + "\n" +
-            "Apellidos: " + apellidosField.getText() + "\n" +
-            "Teléfono: " + telefonoField.getText() + "\n" +
-            "Fecha: " + new java.text.SimpleDateFormat("dd/MM/yyyy").format(fecha) + "\n" +
-            "Saludo: " + saludoArea.getText(),
-            "OK",
-            JOptionPane.INFORMATION_MESSAGE);
+
+        if (!pass1.equals(pass2)) {
+            JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        registrar(nombre, apellidos, telefono, estado, pass1, correo, dateChooser.getDate());
+    }
+
+    private void registrar(String nombre, String apellido, String telefono, String estado, String contraseña, String correo, Date fechaNacimiento) {
+    	LocalDate fechaNac = dateChooser.getDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+    	ImageIcon foto = (ImageIcon) imageLabel.getIcon();
+    	Image imagen = foto != null ? foto.getImage() : null;
+    	boolean exito = false;
+    	if (estado.isEmpty()) {
+        	exito = Controlador.getInstancia().registrarUsuario(nombre, apellido, Integer.parseInt(telefono), Usuario.ESTADO_BASE ,contraseña, correo, fechaNac, LocalDate.now());
+
+		} else {
+			exito = Controlador.getInstancia().registrarUsuario(nombre, apellido, Integer.parseInt(telefono), estado, contraseña, correo, fechaNac, LocalDate.now());
+		}
+    	
+		JOptionPane.showMessageDialog(VentanaRegistro.this, exito ? "Usuario creado correctamente" : "El usuario ya existe");
+		if (exito) {
+			VentanaLogin ventanaLogin = new VentanaLogin();
+			ventanaLogin.setVisible(true);
+			dispose();
+		}
+
+	}
+    
+    private void seleccionarImagen() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png"));
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            if (file != null) {
+                imageLabel.setIcon(new ImageIcon(new ImageIcon(file.getAbsolutePath()).getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
+            }
+        }
+    }
+
+    private void togglePasswordVisibility() {
+        passwordVisible = !passwordVisible;
+        char echo = passwordVisible ? (char) 0 : '•';
+        contraseñaField.setEchoChar(echo);
+        repetirContraseñaField.setEchoChar(echo);
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            VentanaRegistro frame = new VentanaRegistro();
-            frame.setVisible(true);
+            new VentanaRegistro().setVisible(true);
         });
     }
 }
