@@ -19,7 +19,7 @@ public enum BuscadorMensajes {
 			mensajes = usuario.getMensajesEnviadosTlf(Integer.parseInt(telefono));
 		}
 		return mensajes.stream()
-				.filter(m -> nombreContacto.equals("Todos") ||		 
+				.filter(m -> nombreContacto.isEmpty() ||		 
 						m.getReceptor().getNombre().equals(nombreContacto))
 				.filter(m -> m.getTexto().contains(texto))
 				.distinct()
@@ -37,9 +37,9 @@ public enum BuscadorMensajes {
 		}
 		
 		return mensajes.stream()
-				.filter(m -> nombreContacto.equals("Todos") || 
-						usuario.getContacto(nombreContacto) instanceof ContactoIndividual &&
-						((ContactoIndividual) (usuario.getContacto(nombreContacto))).getUsuario() == m.getEmisor())
+				.filter(m -> nombreContacto.isEmpty() ||
+						(usuario.getContacto(nombreContacto) instanceof ContactoIndividual &&
+						((ContactoIndividual) (usuario.getContacto(nombreContacto))).getUsuario().getNumeroTelefono() == m.getEmisor().getNumeroTelefono()))
 				.filter(m -> m.getTexto().contains(texto))
 				.distinct()
 				.collect(Collectors.toList());
