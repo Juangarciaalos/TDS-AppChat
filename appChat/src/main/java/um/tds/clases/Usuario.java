@@ -186,7 +186,7 @@ public class Usuario {
 	}
 	
 	public Image getFoto() {
-		return ConversorImagenes.base64ToImage(foto);
+		return ConversorImagenes.base64ToImage(foto, 75, 75);
 	}
 	
 	private String getImagenInternetCodificada() {

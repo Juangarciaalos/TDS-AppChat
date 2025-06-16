@@ -1,6 +1,7 @@
 package um.tds.controlador;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -117,6 +118,14 @@ public class Controlador {
     	return usuario.getContacto(telefono);
     }
     
+    public Usuario buscarUsuario(int telefono) {
+		return repositorioUsuarios.getUsuarioPorTelefono(telefono);
+	}
+    
+    public Usuario buscarUsuario(String nombre) {
+    	return repositorioUsuarios.getUsuarioPorNombre(nombre);
+    }
+    
     public void enviarMensaje(String texto, Contacto contacto) {
     	Mensaje mensaje = new Mensaje(texto, usuario, contacto);
     	usuario.enviarMensaje(mensaje, contacto);
@@ -215,27 +224,32 @@ public class Controlador {
     	usuarioDAO.modificarUsuario(usuario);
     }
     
-    public void cargarMensajesSinAgregar() {
-    	List<Mensaje> todosLosMensajes = mensajeDAO.recuperarTodosMensajes();
-    	Set<Usuario> emisoresNoAgregados = new HashSet<>();
+    public void cargarContactosSinAgregar() {
+    	mensajeDAO.recuperarTodosMensajes().stream()
+        .filter(m -> m.getReceptor() instanceof ContactoIndividual ci &&
+                     ci.getUsuario().getNumeroTelefono() == usuario.getNumeroTelefono() &&
+                     usuario.esAgregado(m.getEmisor()))
+        .map(Mensaje::getEmisor)
+        .distinct()
+        .forEach(u -> añadirContacto(String.valueOf(u.getNumeroTelefono()), String.valueOf(u.getNumeroTelefono())));
 
-    	for (Mensaje m : todosLosMensajes) {
-    	    if (m.getReceptor() instanceof ContactoIndividual) {
-    	        ContactoIndividual contacto = (ContactoIndividual) m.getReceptor();
+    usuarioDAO.modificarUsuario(usuario);
 
-    	        if (contacto.getUsuario().equals(usuario)) {
+    }
+    
+    public void cargarMensajesRecibidos() { 
+    	List<Mensaje> mensajes = new ArrayList<>();
 
-    	            Usuario emisor = m.getEmisor();
-    	            if (!usuario.esAgregado(emisor)) {
-
-    	            	emisoresNoAgregados.add(emisor);
-    	            }
-    	        }
-    	    }
-    	}
-
-    	for (Usuario u : emisoresNoAgregados) {
-    	    añadirContacto(u.getNombre(), String.valueOf(u.getNumeroTelefono()));
+    	mensajes = mensajeDAO.recuperarTodosMensajes();
+    	for (Mensaje m : mensajes) {
+    		if (m.getReceptor() instanceof ContactoIndividual) {
+    			if (((ContactoIndividual) m.getReceptor()).getUsuario().getNumeroTelefono() == usuario.getNumeroTelefono()) {
+    				if (m.getHoraEnvio().isBefore(LocalDateTime.now()) ) {
+	    				ContactoIndividual contacto = (ContactoIndividual) usuario.getContacto(m.getEmisor().getNumeroTelefono());
+	    	    		contacto.addMensaje(m);
+    				}
+				}
+    		}
     	}
     	usuarioDAO.modificarUsuario(usuario);
     }
@@ -254,10 +268,10 @@ public class Controlador {
     public List<Mensaje> buscarMensajes(String texto, String telefono, String nombre, boolean isEnviado, boolean isRecibido) {
     	List<Mensaje> mensajes = new ArrayList<Mensaje>();
     	if (isEnviado) {
-    		mensajes.addAll(buscadorMensajes.buscarMensajesEnviados(usuario, texto, telefono, nombre));
+    		mensajes.addAll(buscadorMensajes.buscarMensajesEnviados(usuario, telefono, nombre, texto));
     	}
     	if (isRecibido) {
-			mensajes.addAll(buscadorMensajes.buscarMensajesRecibidos(usuario, texto, telefono, nombre));
+			mensajes.addAll(buscadorMensajes.buscarMensajesRecibidos(usuario, telefono, nombre, texto));
 		}
     	return mensajes;
     }

@@ -66,7 +66,7 @@ public class Grupo extends Contacto{
 	
 	@Override
 	public Image getFoto() {		
-		return ConversorImagenes.base64ToImage(ConversorImagenes.imageToBase64(new File("src/main/resources/group.png")));	
+		return ConversorImagenes.base64ToImage(ConversorImagenes.imageToBase64(new File("src/main/resources/group.png")), 80, 80);	
 	}
 	
 	@Override

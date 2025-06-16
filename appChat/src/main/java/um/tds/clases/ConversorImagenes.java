@@ -61,6 +61,18 @@ public class ConversorImagenes {
 	        }
 	    }
 	    
+	    public static Image base64ToImage(String base64, int ancho, int alto) {
+	    	try {
+	            byte[] bytes = Base64.getDecoder().decode(base64);
+	            ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+	            Image img = ImageIO.read(inputStream);
+	            return img.getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return null;
+	        }
+	    }
+	    
 	    public Image rutaToImage(String ruta) {
 	    	try {
 	            File file = new File(ruta);
