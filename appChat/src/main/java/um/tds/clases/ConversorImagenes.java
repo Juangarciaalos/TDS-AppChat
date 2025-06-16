@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.Base64;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 public class ConversorImagenes {
 		public static String imageToBase64(File imagenFile) {
@@ -54,6 +55,23 @@ public class ConversorImagenes {
 	            byte[] bytes = Base64.getDecoder().decode(base64);
 	            ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
 	            return ImageIO.read(inputStream);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            return null;
+	        }
+	    }
+	    
+	    public Image rutaToImage(String ruta) {
+	    	try {
+	            File file = new File(ruta);
+	            if (file.exists()) {
+	            	ImageIcon icon = new ImageIcon("src/main/resources/send.png");
+	            	Image img = icon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+	            	return img;
+	            } else {
+	                System.err.println("El archivo no existe: " + ruta);
+	                return null;
+	            }
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	            return null;
