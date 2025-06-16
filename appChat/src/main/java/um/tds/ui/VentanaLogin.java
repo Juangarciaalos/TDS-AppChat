@@ -2,24 +2,32 @@ package um.tds.ui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
-public class VentanaLogin extends JFrame {
+import um.tds.clases.Usuario;
+import um.tds.controlador.Controlador;
 
+public class VentanaLogin {
+
+    private JFrame frame;
     private JTextField telefonoField;
-    private JPasswordField contraseñaField;
+    private JPasswordField contrasenaField;
 
     public VentanaLogin() {
-        setTitle("AppChat");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 300);
-        setLocationRelativeTo(null);
+        frame = new JFrame("AppChat");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+        frame.setLocationRelativeTo(null);
 
         JPanel contentPane = new JPanel();
         contentPane.setBackground(new Color(34, 34, 34));
         contentPane.setBorder(new EmptyBorder(20, 20, 20, 20));
-        setContentPane(contentPane);
+        frame.setContentPane(contentPane);
 
         GroupLayout gl = new GroupLayout(contentPane);
         contentPane.setLayout(gl);
@@ -32,13 +40,15 @@ public class VentanaLogin extends JFrame {
 
         telefonoField = new JTextField();
         styleField(telefonoField);
+        telefonoField.addActionListener(e -> submit());
 
-        JLabel labelContraseña = new JLabel("Contraseña:");
-        labelContraseña.setForeground(Color.WHITE);
-        labelContraseña.setFont(labelContraseña.getFont().deriveFont(Font.BOLD, 14f));
+        JLabel labelContrasena = new JLabel("Contraseña:");
+        labelContrasena.setForeground(Color.WHITE);
+        labelContrasena.setFont(labelContrasena.getFont().deriveFont(Font.BOLD, 14f));
 
-        contraseñaField = new JPasswordField();
-        styleField(contraseñaField);
+        contrasenaField = new JPasswordField();
+        styleField(contrasenaField);
+        contrasenaField.addActionListener(e -> submit());
 
         JButton botonRegistro = new JButton("Registrar");
         JButton botonCancelar  = new JButton("Cancelar");
@@ -50,15 +60,17 @@ public class VentanaLogin extends JFrame {
 
         botonCancelar.addActionListener(e -> clearFields());
         botonAceptar.addActionListener(e -> submit());
-        botonRegistro.addActionListener(e -> JOptionPane.showMessageDialog(this, 
-            "Funcionalidad de registro aún no implementada.", "Registrar", 
-            JOptionPane.INFORMATION_MESSAGE));
+        botonRegistro.addActionListener(e -> {
+            VentanaRegistro registro = new VentanaRegistro();
+            registro.setVisible(true);
+            frame.dispose();
+        });
 
         gl.setHorizontalGroup(gl.createParallelGroup(GroupLayout.Alignment.CENTER)
             .addComponent(labelTelefono)
             .addComponent(telefonoField)
-            .addComponent(labelContraseña)
-            .addComponent(contraseñaField)
+            .addComponent(labelContrasena)
+            .addComponent(contrasenaField)
             .addGroup(gl.createSequentialGroup()
                 .addComponent(botonRegistro)
                 .addComponent(botonCancelar)
@@ -68,8 +80,8 @@ public class VentanaLogin extends JFrame {
         gl.setVerticalGroup(gl.createSequentialGroup()
             .addComponent(labelTelefono)
             .addComponent(telefonoField,  GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-            .addComponent(labelContraseña)
-            .addComponent(contraseñaField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+            .addComponent(labelContrasena)
+            .addComponent(contrasenaField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED, 20, Short.MAX_VALUE)
             .addGroup(gl.createParallelGroup(GroupLayout.Alignment.CENTER)
                 .addComponent(botonRegistro)
@@ -82,8 +94,17 @@ public class VentanaLogin extends JFrame {
         field.setBackground(new Color(64, 64, 64));
         field.setForeground(Color.WHITE);
         field.setCaretColor(Color.WHITE);
-        field.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        field.setBorder(new LineBorder(Color.GRAY));
         field.setFont(field.getFont().deriveFont(14f));
+
+        field.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                field.setBorder(new LineBorder(Color.WHITE, 2));
+            }
+            public void focusLost(FocusEvent e) {
+                field.setBorder(new LineBorder(Color.GRAY));
+            }
+        });
     }
 
     private void styleButton(JButton btn) {
@@ -107,23 +128,50 @@ public class VentanaLogin extends JFrame {
 
     private void clearFields() {
         telefonoField.setText("");
-        contraseñaField.setText("");
+        contrasenaField.setText("");
     }
 
     private void submit() {
         String telefono = telefonoField.getText().trim();
-        String pass = new String(contraseñaField.getPassword());
-        //TODO lógica del login
-        JOptionPane.showMessageDialog(this, 
-            "Teléfono: " + telefono + "\nContraseña: " + pass, 
-            "Intento de login", JOptionPane.INFORMATION_MESSAGE);
+        String pass = new String(contrasenaField.getPassword());
+
+        if (telefono.isEmpty()){
+            mostrarError("Falta por introducir un teléfono.");
+            return;
+        }
+        
+        if (pass.isEmpty()) {
+            mostrarError("Falta por introducir una contraseña.");
+            return;
+        }
+
+        boolean success = Controlador.getInstancia().iniciarSesion(Integer.parseInt(telefono), pass);
+
+        if (success) {
+            JOptionPane.showMessageDialog(frame, "Bienvenido a AppChat", "Login Exitoso", JOptionPane.INFORMATION_MESSAGE);
+            VentanaPrincipal ventana = new VentanaPrincipal();
+            ventana.setVisible(true);
+            frame.dispose();
+        } else {
+            mostrarError("Teléfono o contraseña incorrectos.");
+        }
+    }
+
+    private void mostrarError(String mensaje) {
+        Toolkit.getDefaultToolkit().beep();
+        telefonoField.setBorder(new LineBorder(Color.RED, 2));
+        contrasenaField.setBorder(new LineBorder(Color.RED, 2));
+        JOptionPane.showMessageDialog(frame, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void setVisible(boolean visible) {
+        frame.setVisible(visible);
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            VentanaLogin frame = new VentanaLogin();
-            frame.setVisible(true);
+            VentanaLogin login = new VentanaLogin();
+            login.setVisible(true);
         });
     }
 }
-
