@@ -1,6 +1,11 @@
 package um.tds.clases;
 
 import java.awt.Image;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class ContactoIndividual extends Contacto{
@@ -29,6 +34,25 @@ public class ContactoIndividual extends Contacto{
 	}
 	
 	
+	@Override
+	public List<Mensaje> getAllMensajes(Usuario usuario) {
+		return Stream.concat(getListaMensaje().stream(), getMensajesEnviados(usuario).stream())
+				.sorted()
+				.collect(Collectors.toList());
+	}
+	
+	public List<Mensaje> getMensajesEnviados(Usuario usuario) {		
+		Optional<ContactoIndividual> contacto = getContactoDeUsuario(usuario);		
+		return contacto.isPresent() ? contacto.get().getListaMensaje() : new LinkedList<>();
+	}
+	
+	private Optional<ContactoIndividual> getContactoDeUsuario(Usuario usuario) {
+		return this.usuario.getContactos().stream()
+				.filter(c -> c instanceof ContactoIndividual)
+				.map(c -> (ContactoIndividual) c)
+				.filter(c -> c.getUsuario().getNumeroTelefono() == usuario.getNumeroTelefono())
+				.findFirst();	
+	}
 	
 	public Usuario getUsuario() {
 		return usuario;

@@ -60,8 +60,13 @@ public class Grupo extends Contacto{
 	}
 	
 	@Override
+	public List<Mensaje> getAllMensajes(Usuario usuario) {
+		return this.getListaMensaje();
+	}
+	
+	@Override
 	public Image getFoto() {		
-		return ConversorImagenes.base64ToImage(ConversorImagenes.imageToBase64(new File("src/main/resources/grupo.png")));	
+		return ConversorImagenes.base64ToImage(ConversorImagenes.imageToBase64(new File("src/main/resources/group.png")));	
 	}
 	
 	@Override

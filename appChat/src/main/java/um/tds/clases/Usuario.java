@@ -149,15 +149,28 @@ public class Usuario {
 	}
 
 	public List<Mensaje> getMensajesEnviados() {
-		return Collections.unmodifiableList(mensajesEnviados);
+		List<Mensaje> mensajes = new ArrayList<>();
+		for (Contacto contacto : contactos) {
+			if (contacto instanceof ContactoIndividual) {
+				mensajes.addAll(((ContactoIndividual) contacto).getListaMensaje());
+			}
+		}
+		return Collections.unmodifiableList(mensajes);
 	}
 	
 	public List<Mensaje> getMensajesRecibidos() {
-		return Collections.unmodifiableList(mensajesRecibidos);
+		List<Mensaje> mensajes = new ArrayList<>();
+		for (Contacto contacto : contactos) {
+			if (contacto instanceof ContactoIndividual) {
+				mensajes.addAll(((ContactoIndividual) contacto).getMensajesEnviados(this));
+			}
+		}
+		return Collections.unmodifiableList(mensajes);
 	}
 	
 	public void enviarMensaje(Mensaje mensaje, Contacto contacto) {
 		contacto.addMensaje(mensaje);
+		mensajesEnviados.add(mensaje);
 	}
 	
 	public LocalDate getFechaAlta() {
@@ -219,30 +232,20 @@ public class Usuario {
 	
 	public List<Mensaje> getMensajesEnviadosTlf(int telefono) {
 		List<Mensaje> mensajes = new ArrayList<>();
-		for (Mensaje mensaje : mensajesEnviados) {
-			if (mensaje.getEmisor().getNumeroTelefono() == telefono) {
-				mensajes.add(mensaje);
-			}
+		Contacto contacto = getContacto(telefono);
+		if (contacto instanceof ContactoIndividual) {
+			ContactoIndividual contactoInd = (ContactoIndividual) contacto;
+			mensajes = contactoInd.getListaMensaje();
 		}
 		return mensajes;
 	}
 	
 	public List<Mensaje> getMensajesRecibidosTlf(int telefono) {
 		List<Mensaje> mensajes = new ArrayList<>();
-		for (Mensaje mensaje : mensajesRecibidos) {
-			if (mensaje.getReceptor() instanceof ContactoIndividual){
-				ContactoIndividual contacto = (ContactoIndividual) mensaje.getReceptor();
-				if (contacto.getNumeroTelefono() == telefono) {
-					mensajes.add(mensaje);
-				}
-			} else if (mensaje.getReceptor() instanceof Grupo) {
-				Grupo grupo = (Grupo) mensaje.getReceptor();
-				Usuario usuario = grupo.getUsuarioTlf(telefono);
-				if (usuario != null) {
-					mensajes.add(mensaje);
-				}
-			}
-			
+		Contacto contacto = getContacto(telefono);
+		if (contacto instanceof ContactoIndividual) {
+			ContactoIndividual contactoInd = (ContactoIndividual) contacto;
+			mensajes = contactoInd.getMensajesEnviados(this);
 		}
 		return mensajes;
 	}

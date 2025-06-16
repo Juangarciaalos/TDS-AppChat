@@ -47,6 +47,9 @@ public abstract class Contacto {
 		}
 	}
 	
+	public abstract List<Mensaje> getAllMensajes(Usuario usuario);
+
+	
 	public abstract Image getFoto();
 	
 	public abstract String getEstado();
