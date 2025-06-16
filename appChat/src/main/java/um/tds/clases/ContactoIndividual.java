@@ -41,9 +41,10 @@ public class ContactoIndividual extends Contacto{
 				.collect(Collectors.toList());
 	}
 	
-	public List<Mensaje> getMensajesEnviados(Usuario usuario) {		
-		Optional<ContactoIndividual> contacto = getContactoDeUsuario(usuario);		
-		return contacto.isPresent() ? contacto.get().getListaMensaje() : new LinkedList<>();
+	public List<Mensaje> getMensajesEnviados(Usuario usuario) {
+	    return getContactoDeUsuario(usuario)
+	            .map(ContactoIndividual::getListaMensaje)
+	            .orElseGet(LinkedList::new);
 	}
 	
 	private Optional<ContactoIndividual> getContactoDeUsuario(Usuario usuario) {

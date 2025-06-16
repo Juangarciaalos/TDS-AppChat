@@ -152,7 +152,8 @@ public class AdaptadorMensajeDAO implements MensajeDAO{
 		} else {
 			receptor = AdaptadorGrupoDAO.getInstancia().recuperarGrupo(Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, RECEPTOR)));
 		}
-		
+		mensaje.setEmisor(emisor);
+		mensaje.setReceptor(receptor);
 		mensaje.setHoraEnvio(horaEnvio);
 		
 		return mensaje;
