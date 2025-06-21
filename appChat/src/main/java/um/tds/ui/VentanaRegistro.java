@@ -1,9 +1,7 @@
 package um.tds.ui;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import javax.swing.*;
@@ -11,10 +9,14 @@ import javax.swing.border.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import com.toedter.calendar.JDateChooser;
 
-import um.tds.clases.ConversorImagenes;
 import um.tds.clases.Usuario;
 import um.tds.controlador.Controlador;
 
+@SuppressWarnings("serial")
+/**
+ * Ventana de registro de usuario.
+ * Permite al usuario ingresar sus datos y registrarse en la aplicación.
+ */
 public class VentanaRegistro extends JFrame {
     private JTextField nombreField;
     private JTextField apellidosField;
@@ -257,8 +259,6 @@ public class VentanaRegistro extends JFrame {
 
     private void registrar(String nombre, String apellido, String telefono, String estado, String contraseña, String correo, Date fechaNacimiento) {
     	LocalDate fechaNac = dateChooser.getDate().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-    	ImageIcon foto = (ImageIcon) imageLabel.getIcon();
-    	Image imagen = foto != null ? foto.getImage() : null;
     	boolean exito = false;
     	if (estado.isEmpty()) {
         	exito = Controlador.getInstancia().registrarUsuario(nombre, apellido, Integer.parseInt(telefono), Usuario.ESTADO_BASE ,contraseña, correo, fechaNac, LocalDate.now());
