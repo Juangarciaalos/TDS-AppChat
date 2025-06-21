@@ -1,6 +1,7 @@
 package um.tds.ui;
 
 import um.tds.clases.Contacto;
+import um.tds.clases.ContactoIndividual;
 import um.tds.clases.Mensaje;
 import um.tds.clases.Usuario;
 import um.tds.controlador.Controlador;
@@ -10,18 +11,31 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("serial")
+
+/**
+ * Ventana para buscar mensajes en la aplicación de chat.
+ * Permite filtrar por texto, teléfono del emisor, nombre del contacto y tipo de mensaje (enviados/recibidos).
+ */
 public class VentanaBusquedaMensajes extends JFrame {
     private JTextField textoField;
-    private JTextField emisorField;
-    private JTextField receptorField;
+    private JTextField telefonoField;
+    private JTextField contactoField;
     private DefaultListModel<Mensaje> modeloMensajes;
     private JList<Mensaje> listaMensajes;
     private JComboBox<String> comboFiltro;
+    private final VentanaPrincipal ventanaPrincipal;
 
-    public VentanaBusquedaMensajes() {
+    public VentanaBusquedaMensajes(VentanaPrincipal ventana) {
+    	
+    	this.ventanaPrincipal = ventana;
+    	
         setTitle("AppChat - Buscar Mensajes");
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -66,8 +80,8 @@ public class VentanaBusquedaMensajes extends JFrame {
 
         JLabel lblEmisor = new JLabel("Teléfono:");
         styleLabel(lblEmisor);
-        emisorField = new JTextField(20);
-        styleField(emisorField);
+        telefonoField = new JTextField(20);
+        styleField(telefonoField);
         GridBagConstraints gbcEmisorLabel = new GridBagConstraints();
         gbcEmisorLabel.insets = new Insets(8, 8, 8, 8);
         gbcEmisorLabel.anchor = GridBagConstraints.EAST;
@@ -82,12 +96,12 @@ public class VentanaBusquedaMensajes extends JFrame {
         gbcEmisorField.weightx = 1.0;
         gbcEmisorField.gridx = 1;
         gbcEmisorField.gridy = 1;
-        panelFiltros.add(emisorField, gbcEmisorField);
+        panelFiltros.add(telefonoField, gbcEmisorField);
 
         JLabel lblReceptor = new JLabel("Contacto:");
         styleLabel(lblReceptor);
-        receptorField = new JTextField(20);
-        styleField(receptorField);
+        contactoField = new JTextField(20);
+        styleField(contactoField);
         GridBagConstraints gbcReceptorLabel = new GridBagConstraints();
         gbcReceptorLabel.insets = new Insets(8, 8, 8, 8);
         gbcReceptorLabel.anchor = GridBagConstraints.EAST;
@@ -102,7 +116,7 @@ public class VentanaBusquedaMensajes extends JFrame {
         gbcReceptorField.weightx = 1.0;
         gbcReceptorField.gridx = 1;
         gbcReceptorField.gridy = 2;
-        panelFiltros.add(receptorField, gbcReceptorField);
+        panelFiltros.add(contactoField, gbcReceptorField);
 
         JLabel lblTipo = new JLabel("Tipo:");
         styleLabel(lblTipo);
@@ -138,43 +152,108 @@ public class VentanaBusquedaMensajes extends JFrame {
 
         modeloMensajes = new DefaultListModel<>();
         listaMensajes = new JList<>(modeloMensajes);
+        listaMensajes.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                          boolean isSelected, boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof Mensaje mensaje) {
+                	String nombreEmisor, nombreReceptor;
+                	Usuario actual = Controlador.getInstancia().getUsuarioActual();
+                    if (mensaje.getEmisor().getNumeroTelefono() == actual.getNumeroTelefono()) {
+                        nombreEmisor = "Tú";
+                        nombreReceptor = mensaje.getReceptor().getNombre();
+                    } else {
+                        nombreEmisor = actual.getContacto(mensaje.getEmisor().getNumeroTelefono()).getNombre();
+                        nombreReceptor = "Tú";
+                    }
+                   
+                    String fecha = mensaje.getHoraEnvio().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+                    String texto;
+
+                    if (mensaje.getTexto().isEmpty()) {
+                        texto = "Emoji";
+                    } else {
+                        texto = mensaje.getTexto();
+                    }
+
+                    label.setText("Emisor: " + nombreEmisor + " - " + fecha + ": " + texto + " | Receptor: " + nombreReceptor);
+                    label.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                    label.setBackground(isSelected ? new Color(80, 80, 80) : new Color(34, 34, 34));
+                    label.setForeground(Color.WHITE);
+                    label.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+                }
+                return label;
+            }
+        });
+
         listaMensajes.setBackground(new Color(34, 34, 34));
         listaMensajes.setForeground(Color.WHITE);
+        listaMensajes.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int index = listaMensajes.locationToIndex(e.getPoint());
+                if (index >= 0) {
+                    Mensaje mensaje = modeloMensajes.get(index);
+                    Contacto contactoChat;
 
+                    Usuario actual = Controlador.getInstancia().getUsuarioActual();
+                    if (mensaje.getEmisor().getNumeroTelefono() == actual.getNumeroTelefono()) {
+                        contactoChat = mensaje.getReceptor();
+                    } else {
+                        contactoChat = actual.getContacto(mensaje.getEmisor().getNumeroTelefono());
+                    }
+
+                    ventanaPrincipal.irAConversacion(contactoChat, mensaje);
+                    dispose(); 
+                }
+            }
+        });
+        
         JScrollPane scroll = new JScrollPane(listaMensajes);
-        scroll.setBorder(new TitledBorder(new LineBorder(Color.GRAY), "Resultados", TitledBorder.LEADING, TitledBorder.TOP, null, Color.WHITE));
+        scroll.setBorder(new TitledBorder(new LineBorder(Color.GRAY), "Resultados", TitledBorder.LEADING, TitledBorder.TOP, null, Color.BLACK));
         panelMain.add(scroll);
     }
 
     private void realizarBusqueda(ActionEvent e) {
         String texto = textoField.getText().trim();
-        String emisor = emisorField.getText().trim();
-        String receptor = receptorField.getText().trim();
+        String telefono = telefonoField.getText().trim();
+        String contacto = contactoField.getText().trim();
         boolean enviados = comboFiltro.getSelectedIndex() == 1;
         boolean recibidos = comboFiltro.getSelectedIndex() == 2;
         if (comboFiltro.getSelectedIndex() == 0) {
 			enviados = recibidos = true;
 		}
         
-        if (texto.isEmpty() && emisor.isEmpty() && receptor.isEmpty() && !enviados && !recibidos) {
+        if (texto.isEmpty() && telefono.isEmpty() && contacto.isEmpty() && !enviados && !recibidos) {
             mostrarError("Introduce al menos un filtro.");
             return;
         }
 
-        if (!emisor.isEmpty() && !emisor.matches("\\d+")) {
+        if (!telefono.isEmpty() && !telefono.matches("\\d+")) {
             mostrarError("El teléfono del emisor debe de ser numérico.");
             return;
         }
-
-        if (!receptor.isEmpty()) {
-            Optional<Contacto> receptorContacto = Optional.ofNullable(Controlador.getInstancia().buscarContacto(receptor));
+        
+        if (!contacto.isEmpty()) {
+            Optional<Contacto> receptorContacto = Optional.ofNullable(Controlador.getInstancia().buscarContacto(contacto));
             if (receptorContacto.isEmpty()) {
-                mostrarError("No se encuentra ningún receptor con ese nombre.");
+                mostrarError("No se encuentra ningún contacto con ese nombre.");
                 return;
+            } else {
+            	if (receptorContacto.get() instanceof ContactoIndividual) {
+            		ContactoIndividual ci = (ContactoIndividual) receptorContacto.get();
+            		if (!ci.isContactoAgregado()) {
+            			mostrarError("El contacto especificado no está agregado.");
+						return;
+					}
+            	}
             }
-        }
 
-        List<Mensaje> resultados = Controlador.getInstancia().buscarMensajes(texto, emisor, receptor, enviados, recibidos);
+        }
+        
+
+        List<Mensaje> resultados = Controlador.getInstancia().buscarMensajes(texto, telefono, contacto, enviados, recibidos);
         modeloMensajes.clear();
         if(resultados.isEmpty()) {
 			mostrarError("No se encontraron mensajes con los filtros especificados.");
@@ -182,7 +261,7 @@ public class VentanaBusquedaMensajes extends JFrame {
 		}
         resultados.forEach(modeloMensajes::addElement);
     }
-
+    
     private void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
