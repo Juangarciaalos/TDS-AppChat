@@ -1,11 +1,16 @@
 package um.tds.ui;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import um.tds.controlador.Controlador;
 
+@SuppressWarnings("serial")
+/*
+ * Ventana para añadir un nuevo contacto.
+ * Permite introducir el nombre y el teléfono del contacto.
+ * Valida la entrada y muestra mensajes de error o éxito.
+ */
 public class VentanaAddContacto extends JFrame {
 
     private static final String ERROR_TLF = "El teléfono debe ser un número";
@@ -146,5 +151,9 @@ public class VentanaAddContacto extends JFrame {
 
     private void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    
+    public void setTelefono(String numero) {
+        txtTelefono.setText(numero);
     }
 }
