@@ -343,8 +343,7 @@ public class Controlador {
     public void cargarContactosSinAgregar() {
         mensajeDAO.recuperarTodosMensajes().stream()
             .filter(m -> m.getReceptor() instanceof ContactoIndividual ci &&
-                         ci.getUsuario().getNumeroTelefono() == usuario.getNumeroTelefono() &&
-                         usuario.esAgregado(m.getEmisor()))
+                         ci.getUsuario().getNumeroTelefono() == usuario.getNumeroTelefono())
             .map(Mensaje::getEmisor)
             .distinct()
             .forEach(u -> añadirContacto(String.valueOf(u.getNumeroTelefono()), String.valueOf(u.getNumeroTelefono())));
