@@ -13,6 +13,10 @@ import um.tds.clases.Mensaje;
 import um.tds.clases.Usuario;
 import um.tds.controlador.Controlador;
 
+/**
+ * Panel que muestra el chat con un contacto específico.
+ */
+
 public class VentanaChat extends JPanel implements Scrollable {
 
     private static final long serialVersionUID = 1L;
@@ -39,7 +43,50 @@ public class VentanaChat extends JPanel implements Scrollable {
         MensajesToBubbleText(contacto).forEach(this::add);
         revalidate();
         repaint();
+        scrollToBottom();
     }
+    
+    public void mostrarChatYResaltar(Contacto contacto, Mensaje mensajeObjetivo) {
+        removeAll();
+        add(Box.createHorizontalStrut(500));
+
+        Usuario actual = Controlador.getInstancia().getUsuarioActual();
+        List<Mensaje> mensajes = contacto.getAllMensajes(actual);
+        
+        final BubbleText[] burbujaObjetivo = new BubbleText[1];
+
+        for (Mensaje m : mensajes) {
+            boolean esActual = m.getEmisor().getNumeroTelefono() == actual.getNumeroTelefono();
+            String nombre = esActual ? actual.getNombre() : contacto.getNombre();
+            Color color = esActual ? Color.GREEN : Color.LIGHT_GRAY;
+            int tipo = esActual ? BubbleText.SENT : BubbleText.RECEIVED;
+            String fecha = " - " + m.getHoraEnvio().format(formatter);
+
+            BubbleText burbuja;
+            if (isEmoticono(m)) {
+                burbuja = new BubbleText(this, m.getEmoticono(), color, nombre + fecha, tipo, 12);
+            } else {
+                burbuja = new BubbleText(this, m.getTexto(), color, nombre + fecha, tipo, 12);
+            }
+
+            add(burbuja);
+
+            if (m.equals(mensajeObjetivo)) {
+                burbujaObjetivo[0] = burbuja;
+            }
+        }
+
+        revalidate();
+        repaint();
+
+        SwingUtilities.invokeLater(() -> {
+            if (burbujaObjetivo[0] != null) {
+                burbujaObjetivo[0].scrollRectToVisible(new Rectangle(0, 0, burbujaObjetivo[0].getWidth(), burbujaObjetivo[0].getHeight()));
+            }
+        });
+    }
+
+
 
     public void enviarMensaje(String mensaje) {
         String fecha = LocalDateTime.now().format(formatter);
@@ -47,6 +94,7 @@ public class VentanaChat extends JPanel implements Scrollable {
         add(burbuja);
         revalidate();
         repaint();
+        scrollToBottom();
     }
 
     public void enviarEmoticono(int emoticono) {
@@ -55,6 +103,7 @@ public class VentanaChat extends JPanel implements Scrollable {
         add(burbuja);
         revalidate();
         repaint();
+        scrollToBottom();
     }
 
     private List<BubbleText> MensajesToBubbleText(Contacto contacto) {
@@ -81,7 +130,18 @@ public class VentanaChat extends JPanel implements Scrollable {
     private boolean isEmoticono(Mensaje mensaje) {
         return mensaje.getTexto().isEmpty();
     }
-
+    
+    private void scrollToBottom() {
+        SwingUtilities.invokeLater(() -> {
+            Container parent = getParent();
+            if (parent instanceof JViewport viewport) {
+                JScrollPane scrollPane = (JScrollPane) viewport.getParent();
+                JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
+                verticalBar.setValue(verticalBar.getMaximum());
+            }
+        });
+    }
+    
     @Override
     public Dimension getPreferredScrollableViewportSize() {
         return getPreferredSize();
