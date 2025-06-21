@@ -20,4 +20,9 @@ public class DescuentoPorMensaje implements Descuento{
 		int mensajesEnviadosUltimoMes = (int) usuario.getMensajesEnviados().stream().filter(m -> m.getHoraEnvio().isAfter(inicioMes)).count();
 		return mensajesEnviadosUltimoMes >= NUMERO_MENSAJES;
 	}
+	
+	@Override
+	public String getNombre() {
+		return "Descuento por mensajes enviados";
+	}
 }

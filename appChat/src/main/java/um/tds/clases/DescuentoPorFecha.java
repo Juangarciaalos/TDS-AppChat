@@ -19,4 +19,9 @@ public class DescuentoPorFecha implements Descuento{
 			return false;
 		}
 	}
+	
+	@Override
+	public String getNombre() {
+		return "Descuento por fecha de alta";
+	}
 }

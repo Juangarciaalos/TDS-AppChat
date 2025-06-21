@@ -11,5 +11,10 @@ public class DescuentoNulo implements Descuento {
 	public boolean esAplicable(Usuario usuario) {
 		return true; 
 	}
+	
+	@Override
+	public String getNombre() {
+		return "Sin descuento";
+	}
 
 }
