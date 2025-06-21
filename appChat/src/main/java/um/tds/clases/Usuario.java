@@ -196,7 +196,7 @@ public class Usuario {
 	}
 	
 	public ImageIcon getImagenIcon() {
-		Image image = ConversorImagenes.base64ToImage(getImagenInternetCodificada());
+		Image image = getFoto();
 		return new ImageIcon(image.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
 	}
 	
@@ -221,7 +221,7 @@ public class Usuario {
 			URL urlPerfil = new URL(foto);
 			image = ImageIO.read(urlPerfil);
 		} catch (IOException e) {
-			e.printStackTrace();
+			image = new ImageIcon("src/main/resources/default-user.png").getImage();
 		}
 		return image;
 	}
@@ -273,4 +273,11 @@ public class Usuario {
 		return false;
 	}
 	
+	
+	public boolean esContactoSinAgregar(ContactoIndividual contacto) {
+		if (contacto.getNombre() == String.valueOf(contacto.getNumeroTelefono())) {
+			return true;
+		}
+		return false;
+	}
 }

@@ -126,6 +126,10 @@ public class Controlador {
     	return repositorioUsuarios.getUsuarioPorNombre(nombre);
     }
     
+    public List<Contacto> getContactos() {
+		return usuario.getContactos();
+	}
+    
     public void enviarMensaje(String texto, Contacto contacto) {
     	Mensaje mensaje = new Mensaje(texto, usuario, contacto);
     	usuario.enviarMensaje(mensaje, contacto);
@@ -208,7 +212,7 @@ public class Controlador {
 			usuario.addContacto(nuevoContacto);
 			usuarioDAO.modificarUsuario(usuario);
 			return true;
-		} else if (contacto.get().isContactoAgregado()) {
+		} else if (!contacto.get().isContactoAgregado()) {
 			contacto.get().setNombre(nombre);
 			contactoIndividualDAO.modificarContactoIndividual(contacto.get());
 			return true;
@@ -275,6 +279,33 @@ public class Controlador {
 		}
     	return mensajes;
     }
+    
+    public Optional<Contacto> iniciarConversacion(String entrada) {
+    
+
+        if (entrada.matches("\\d+")) {
+            int telefono = Integer.parseInt(entrada);
+
+            if (telefono == usuario.getNumeroTelefono()) return Optional.empty();
+
+            Contacto existente = usuario.getContacto(telefono);
+            if (existente != null) return Optional.of(existente);
+
+            Usuario encontrado = buscarUsuario(telefono);
+            if (encontrado != null) {
+                ContactoIndividual nuevo = new ContactoIndividual(entrada, encontrado); 
+                contactoIndividualDAO.registrarContactoIndividual(nuevo);
+                usuario.addContacto(nuevo);
+                usuarioDAO.modificarUsuario(usuario);
+                return Optional.of(nuevo);
+            }
+            return Optional.empty();
+        }
+
+        Contacto contacto = usuario.getContacto(entrada);
+        return Optional.ofNullable(contacto);
+    }
+
     
     public void cerrarSesion() {
     	usuario = null;
