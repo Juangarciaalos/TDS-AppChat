@@ -27,10 +27,7 @@ public class ContactoIndividual extends Contacto{
 	}
 	
 	public boolean isContactoAgregado() {
-		if (this.getNombre() == String.valueOf(usuario.getNumeroTelefono())) {
-			return false;
-		}
-		return true;
+		return !this.getNombre().equals(String.valueOf(this.getNumeroTelefono()));
 	}
 	
 	
