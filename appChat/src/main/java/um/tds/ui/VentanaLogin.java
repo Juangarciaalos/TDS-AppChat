@@ -2,16 +2,17 @@ package um.tds.ui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import um.tds.clases.Usuario;
 import um.tds.controlador.Controlador;
 
+/**
+ * Ventana de inicio de sesión para la aplicación AppChat.
+ * Permite a los usuarios ingresar su número de teléfono y contraseña.
+ * Incluye opciones para registrarse o cancelar el inicio de sesión.
+ */
 public class VentanaLogin {
 
     private JFrame frame;
