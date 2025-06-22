@@ -1,11 +1,12 @@
 package um.tds.clases;
 
 import java.awt.Image;
-import java.io.File;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import um.tds.Utilidades.ConversorImagenes;
 
 
 public class Grupo extends Contacto{
@@ -66,7 +67,7 @@ public class Grupo extends Contacto{
 	
 	@Override
 	public Image getFoto() {		
-		return ConversorImagenes.base64ToImage(ConversorImagenes.imageToBase64(new File("src/main/resources/group.png")), 80, 80);	
+		return ConversorImagenes.base64ToImage(foto, 75, 75);	
 	}
 	
 	@Override

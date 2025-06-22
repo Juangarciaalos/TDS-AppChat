@@ -2,6 +2,7 @@ package um.tds.ui;
 
 import um.tds.Utilidades.ConversorImagenes;
 import um.tds.clases.ContactoIndividual;
+import um.tds.clases.Grupo;
 import um.tds.controlador.Controlador;
 
 import javax.swing.*;
@@ -15,20 +16,20 @@ import java.util.List;
 
 @SuppressWarnings("serial")
 /**
- * Ventana para crear un nuevo grupo de chat.
+ * Ventana para editar un grupo de chat.
  * Permite ingresar el nombre, descripción, seleccionar contactos y una imagen.
  */
-public class VentanaCrearGrupo extends JFrame {
+public class VentanaEditarGrupo extends JFrame {
     private JTextField nombreField;
     private JTextArea descripcionArea;
     private JLabel imageLabel;
     private DefaultListModel<ContactoIndividual> modeloDisponibles;
     private DefaultListModel<ContactoIndividual> modeloSeleccionados;
-    private VentanaPrincipal ventanaPrincipal;
     private Image imagenSeleccionada;
-    
-    public VentanaCrearGrupo(VentanaPrincipal ventanaPrincipal) {
-    	this.ventanaPrincipal = ventanaPrincipal;
+    private VentanaPrincipal ventanaPrincipal;
+
+    public VentanaEditarGrupo(Grupo grupo, VentanaPrincipal ventanaPrincipal) {
+        this.ventanaPrincipal = ventanaPrincipal;
         setTitle("AppChat - Crear Grupo");
         setSize(900, 600);
         setLocationRelativeTo(null);
@@ -51,6 +52,7 @@ public class VentanaCrearGrupo extends JFrame {
         centro.add(lblNombre, gbc);
 
         nombreField = crearTextField();
+        nombreField.setText(grupo.getNombre());
         gbc.gridx = 1; gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         centro.add(nombreField, gbc);
@@ -67,6 +69,7 @@ public class VentanaCrearGrupo extends JFrame {
         descripcionArea.setWrapStyleWord(true);
         descripcionArea.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         descripcionArea.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        descripcionArea.setText(grupo.getEstado() != null ? grupo.getEstado() : "");
         gbc.gridx = 1; gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         centro.add(new JScrollPane(descripcionArea), gbc);
@@ -80,7 +83,7 @@ public class VentanaCrearGrupo extends JFrame {
         gbc.gridx = 1; gbc.gridy = 2;
         centro.add(btnSeleccionarImagen, gbc);
 
-        imagenSeleccionada = new ImageIcon("src/main/resources/group.png").getImage();
+        imagenSeleccionada = grupo.getFoto();
         imageLabel = new JLabel(new ImageIcon(imagenSeleccionada.getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
         gbc.gridx = 1; gbc.gridy = 3;
         centro.add(imageLabel, gbc);
@@ -98,6 +101,15 @@ public class VentanaCrearGrupo extends JFrame {
             	}
             }
         }
+        
+        for (var c : grupo.getParticipantes()) {
+			if (c instanceof ContactoIndividual) {
+				modeloSeleccionados.addElement((ContactoIndividual) c);
+				if (modeloDisponibles.contains(c)) {
+					modeloDisponibles.removeElement(c);
+				}
+			}
+		}
 
         JList<ContactoIndividual> listDisponibles = new JList<>(modeloDisponibles);
         listDisponibles.setCellRenderer(new ContactCellRenderer());
@@ -138,7 +150,7 @@ public class VentanaCrearGrupo extends JFrame {
         acciones.setBackground(new Color(34, 34, 34));
         JButton btnAgregar = crearBoton("→");
         JButton btnQuitar = crearBoton("←");
-        JButton btnCrear = crearBoton("Crear Grupo");
+        JButton btnCrear = crearBoton("Editar Grupo");
 
         acciones.add(btnAgregar);
         acciones.add(btnQuitar);
@@ -148,7 +160,7 @@ public class VentanaCrearGrupo extends JFrame {
         btnAgregar.addActionListener(e -> moverSeleccion(listDisponibles, modeloDisponibles, modeloSeleccionados));
         btnQuitar.addActionListener(e -> moverSeleccion(listSeleccionados, modeloSeleccionados, modeloDisponibles));
         btnSeleccionarImagen.addActionListener(e -> seleccionarImagen());
-        btnCrear.addActionListener(this::crearGrupo);
+        btnCrear.addActionListener(e -> editarGrupo(grupo, e));
     }
 
     private void seleccionarImagen() {
@@ -163,7 +175,6 @@ public class VentanaCrearGrupo extends JFrame {
         }
     }
 
-
     private void moverSeleccion(JList<ContactoIndividual> lista, DefaultListModel<ContactoIndividual> from, DefaultListModel<ContactoIndividual> to) {
         var selected = lista.getSelectedValue();
         if (selected != null) {
@@ -172,7 +183,7 @@ public class VentanaCrearGrupo extends JFrame {
         }
     }
 
-    private void crearGrupo(ActionEvent e) {
+    private void editarGrupo(Grupo grupo, ActionEvent e) {
         String nombre = nombreField.getText().trim();
         String descripcion = descripcionArea.getText().trim();
         List<ContactoIndividual> participantes = new ArrayList<>();
@@ -189,10 +200,12 @@ public class VentanaCrearGrupo extends JFrame {
 
         String foto = ConversorImagenes.imageToBase64(imagenSeleccionada);
 
-        Controlador.getInstancia().crearGrupo(nombre, participantes, foto, descripcion);
-        JOptionPane.showMessageDialog(this, "Grupo creado correctamente.");
-        ventanaPrincipal.actualizarListaContactos();
-        dispose();
+        Controlador.getInstancia().editarGrupo(grupo, nombre, foto, descripcion, participantes);
+        JOptionPane.showMessageDialog(this, "Grupo editado correctamente.");
+        ventanaPrincipal.actualizarListaContactos(); 
+        ventanaPrincipal.irAConversacion(grupo);     
+        dispose();                                   
+
     }
 
     private JLabel crearLabel(String text) {

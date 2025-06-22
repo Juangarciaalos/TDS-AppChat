@@ -10,6 +10,7 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+import um.tds.Utilidades.ConversorImagenes;
 
 import java.time.LocalDate;
 

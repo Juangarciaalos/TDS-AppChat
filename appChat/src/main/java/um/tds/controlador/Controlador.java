@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import um.tds.Utilidades.BuscadorMensajes;
-import um.tds.Utilidades.GeneradorPDF;
+import um.tds.Servicios.BuscadorMensajes;
+import um.tds.Servicios.GeneradorPDF;
 import um.tds.clases.Contacto;
 import um.tds.clases.ContactoIndividual;
 import um.tds.clases.Grupo;
@@ -263,7 +263,7 @@ public class Controlador {
      * @param nombre (NO USADO) Posible parámetro redundante.
      * @param participantes Nueva lista de participantes.
      */
-    public void editarGrupo(Grupo grupo, String nuevoNombre, String fotoCodificada, String estado, String nombre, List<ContactoIndividual> participantes) {
+    public void editarGrupo(Grupo grupo, String nuevoNombre, String fotoCodificada, String estado, List<ContactoIndividual> participantes) {
         grupo.setNombre(nuevoNombre);
         grupo.setStringFoto(fotoCodificada);
         grupo.setEstado(estado);

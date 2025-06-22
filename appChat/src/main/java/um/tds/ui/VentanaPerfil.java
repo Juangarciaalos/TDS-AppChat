@@ -13,8 +13,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import um.tds.Utilidades.ConversorImagenes;
 import um.tds.controlador.Controlador;
-import um.tds.clases.ConversorImagenes;
 
 @SuppressWarnings("serial")
 /**

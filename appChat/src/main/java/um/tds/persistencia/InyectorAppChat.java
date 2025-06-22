@@ -3,11 +3,12 @@ package um.tds.persistencia;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.LinkedList;
+
+import um.tds.Utilidades.ConversorImagenes;
 import um.tds.clases.ContactoIndividual;
 import um.tds.clases.Grupo;
 import um.tds.clases.Mensaje;
 import um.tds.clases.Usuario;
-import um.tds.clases.ConversorImagenes;
 
 /**
  * Clase para cargar datos de prueba en la aplicacion.   

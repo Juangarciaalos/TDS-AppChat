@@ -23,6 +23,7 @@ public class VentanaPrincipal extends JFrame {
     private JButton botonBusqueda;
     private JButton botonAddContacto;
     private JButton botonCrearGrupo; 
+    private JButton botonEditarGrupo;
     private JTextField campoBusqueda;
     private JList<Contacto> listaContactos;
     private DefaultListModel<Contacto> modelContactos;
@@ -111,7 +112,7 @@ public class VentanaPrincipal extends JFrame {
         styleIconButton(botonCrearGrupo);
         botonCrearGrupo.setToolTipText("Crear nuevo grupo");
         botonCrearGrupo.addActionListener(e -> {
-            VentanaCrearGrupo ventana = new VentanaCrearGrupo();
+            VentanaCrearGrupo ventana = new VentanaCrearGrupo(this);
             ventana.setVisible(true);
         });
         
@@ -178,6 +179,20 @@ public class VentanaPrincipal extends JFrame {
             }
         });
         
+        ImageIcon iconEditarGrupo = new ImageIcon("src/main/resources/edit-group.png");
+        Image imgEditarGrupo = iconEditarGrupo.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        botonEditarGrupo = new JButton(new ImageIcon(imgEditarGrupo));
+        styleIconButton(botonEditarGrupo);
+        botonEditarGrupo.setToolTipText("Editar grupo");
+        botonEditarGrupo.addActionListener(e -> {
+            Contacto seleccionado = listaContactos.getSelectedValue();
+            if (seleccionado instanceof Grupo grupoSeleccionado) {
+                new VentanaEditarGrupo(grupoSeleccionado, this).setVisible(true);
+            } else {
+                JOptionPane.showMessageDialog(this, "Selecciona un grupo para editar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+        
         topBar.add(Box.createHorizontalStrut(5));
         topBar.add(campoBusqueda);
         topBar.add(Box.createHorizontalStrut(5));
@@ -188,6 +203,8 @@ public class VentanaPrincipal extends JFrame {
         topBar.add(botonAddContacto);
         topBar.add(Box.createHorizontalStrut(5));
         topBar.add(botonCrearGrupo); 
+        topBar.add(Box.createHorizontalStrut(5));
+        topBar.add(botonEditarGrupo);
         topBar.add(Box.createHorizontalStrut(5));
         topBar.add(botonPremium);
         topBar.add(Box.createHorizontalStrut(5));
@@ -334,7 +351,7 @@ public class VentanaPrincipal extends JFrame {
 
     }
 
-    private void actualizarListaContactos() {
+    public void actualizarListaContactos() {
         Contacto contactoSeleccionado = listaContactos.getSelectedValue(); 
 
         modelContactos.clear();

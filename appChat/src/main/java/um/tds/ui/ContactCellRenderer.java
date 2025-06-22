@@ -23,7 +23,10 @@ public class ContactCellRenderer extends JPanel implements ListCellRenderer<Cont
     private JLabel mensajeLabel;
     private JLabel imageLabel;
     private JButton btnAdd;
-
+	/**
+	 * Constructor de ContactCellRenderer.
+	 * Configura el layout, los componentes y sus estilos.
+	 */
     public ContactCellRenderer() {
         setLayout(new GridBagLayout());
         setOpaque(true);

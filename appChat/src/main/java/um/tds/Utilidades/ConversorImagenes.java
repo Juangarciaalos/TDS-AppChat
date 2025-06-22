@@ -1,4 +1,4 @@
-package um.tds.clases;
+package um.tds.Utilidades;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
