@@ -1,13 +1,24 @@
 package um.tds.appChat;
 
+import java.awt.EventQueue;
+import um.tds.ui.VentanaLogin;
+
 /**
- * Hello world!
- *
+ *	Clase lanzadora de la aplicación.
  */
 public class App 
 {
     public static void main( String[] args )
     {
-        System.out.println( "Hello World!" );
+       EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					VentanaLogin ventana = new VentanaLogin();
+					ventana.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
     }
 }
