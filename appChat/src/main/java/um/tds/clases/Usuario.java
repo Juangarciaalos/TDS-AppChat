@@ -267,23 +267,13 @@ public class Usuario {
 
 	public void editarContacto(Contacto c) {
 		for (Contacto contacto : contactos) {
-			if (contacto.getCodigo().equals(c.getCodigo()) {
+			if (contacto.getCodigo().equals(c.getCodigo())) {
 				contactos.remove(contacto);
 				contactos.add(c);
+				return;
 			}
 		}
 	}
-			
-	
-	public boolean esAgregado(Usuario usuario) {
-		for (Contacto contacto : contactos) {
-			if (contacto instanceof ContactoIndividual && ((ContactoIndividual) contacto).getUsuario().equals(usuario)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	
 	public boolean esContactoSinAgregar(ContactoIndividual contacto) {
 		if (contacto.getNombre() == String.valueOf(contacto.getNumeroTelefono())) {
