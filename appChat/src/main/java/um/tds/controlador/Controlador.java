@@ -260,7 +260,6 @@ public class Controlador {
      * @param nuevoNombre Nuevo nombre del grupo.
      * @param fotoCodificada Foto del grupo en formato base64.
      * @param estado Nuevo estado del grupo.
-     * @param nombre (NO USADO) Posible parámetro redundante.
      * @param participantes Nueva lista de participantes.
      */
     public void editarGrupo(Grupo grupo, String nuevoNombre, String fotoCodificada, String estado, List<ContactoIndividual> participantes) {
