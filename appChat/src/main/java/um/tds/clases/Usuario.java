@@ -264,6 +264,16 @@ public class Usuario {
 		mensajes.addAll(mensajesRecibidos);
 		return mensajes;
 	}
+
+	public void editarContacto(Contacto c) {
+		for (Contacto contacto : contactos) {
+			if (contacto.getCodigo().equals(c.getCodigo()) {
+				contactos.remove(contacto);
+				contactos.add(c);
+			}
+		}
+	}
+			
 	
 	public boolean esAgregado(Usuario usuario) {
 		for (Contacto contacto : contactos) {
